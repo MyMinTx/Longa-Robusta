@@ -88,9 +88,17 @@
   "inspection": {
     "ts": "2026-11-19T05:47:00.000+00:00",
     "defect_pct": 6.2,
-    "vis_url": null,
-    "class_counts": null,
-    "total": null,
+    "vis_url": "mock/vis-lot-3.svg",
+    "class_counts": {
+      "good": 106,
+      "broken": 3,
+      "black": 2,
+      "shell": 1,
+      "parchment": 0,
+      "immature": 1,
+      "husk": 0
+    },
+    "total": 113,
     "grade_hint": null
   },
   "pricing": {
