@@ -1,0 +1,315 @@
+:root{
+  --bg:#F4F1EC; --card:#FFFFFF; --ink:#23180F; --muted:#6B5B4E; --line:#E4DDD4; --line-soft:#EEE7DE; --coffee:#5A3A26;
+  --primary:#00813F; --primary-ink:#006B34; --primary-deep:#00552A;
+  --drying-bg:#FFF4DB;  --drying:#8A5300;  --drying-bar:#B36B00; --drying-track:#F1E6D3;
+  --ready-bg:#E3F6EA;   --ready:#006B34;
+  --selling-bg:#E6EEFB; --selling:#1F4FB3;
+  --sold-bg:#EFE7DF;    --sold:#5A3A26;
+  --alert-bg:#FDE8E6;   --alert:#B3261E;
+  --note-bg:#EAE3D9;    --skeleton:#E9E3DB;
+  --r-chip:999px; --r-card:16px; --r-tile:14px; --r-sheet:24px;
+  --gutter:20px;
+  --safe-b:env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;-webkit-text-size-adjust:100%}
+body{
+  font-family:'IBM Plex Sans Thai',sans-serif;font-variant-numeric:tabular-nums;
+  background:var(--bg);color:var(--ink);font-size:15px;line-height:22px;
+}
+button{font-family:inherit;color:inherit}
+a{color:var(--primary)}
+h1,h2,p{margin:0}
+[hidden]{display:none !important}
+
+/* ---------- โครงหน้า ---------- */
+.app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+.appbar{
+  position:sticky;top:0;z-index:5;height:44px;padding-top:env(safe-area-inset-top,0px);box-sizing:content-box;
+  background:#fff;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;
+}
+.sim-badge{
+  position:absolute;right:12px;bottom:10px;height:24px;padding:0 9px;border-radius:var(--r-chip);
+  background:#ECE9E5;color:#4F463E;font-size:13px;line-height:24px;font-weight:600;
+}
+.screen{flex:1;padding:16px var(--gutter) 24px;display:flex;flex-direction:column;gap:12px}
+
+/* ---------- แถบบน: ชิปสถานะ + เวลา ---------- */
+.status-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:var(--r-chip);font-size:15px;font-weight:600;white-space:nowrap}
+.chip svg{width:18px;height:18px}
+.chip-drying{background:var(--drying-bg);color:var(--drying)}
+.chip-ready{background:var(--ready-bg);color:var(--ready)}
+.chip-selling{background:var(--selling-bg);color:var(--selling)}
+.chip-sold{background:var(--sold-bg);color:var(--sold)}
+.chip-alert{background:var(--alert-bg);color:var(--alert)}
+.updated{display:inline-flex;align-items:center;gap:4px;font-size:14px;line-height:20px;color:var(--muted);white-space:nowrap}
+.updated svg{width:16px;height:16px}
+
+.title{font-size:26px;line-height:36px;font-weight:700}
+.subtitle{font-size:15px;line-height:22px;color:var(--muted)}
+
+/* ---------- การ์ด ---------- */
+.card{background:var(--card);border-radius:var(--r-card);padding:16px 18px}
+.card-raised{box-shadow:0 1px 2px rgba(35,24,15,.06)}
+.label{font-size:15px;line-height:22px;color:var(--muted)}
+
+/* การ์ดราคา (หน้า 03) */
+.price-card{padding:18px 18px 6px}
+.price-row{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.price-big{font-size:48px;line-height:56px;font-weight:700;letter-spacing:-.5px}
+.price-unit{font-size:17px;line-height:24px;color:var(--muted)}
+.floor-line{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:15px;line-height:22px}
+.floor-line svg{width:20px;height:20px;flex-shrink:0;color:var(--ready)}
+.link-row{
+  display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin-top:10px;
+  border:0;border-top:1px solid var(--line-soft);background:none;padding:0;cursor:pointer;
+  font-size:16px;font-weight:600;color:var(--primary);text-align:left;
+}
+.link-row svg{width:20px;height:20px}
+
+/* 3 ช่องตัวเลข */
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tile{background:var(--card);border-radius:var(--r-tile);padding:12px;display:flex;flex-direction:column;gap:2px}
+.tile > svg{width:20px;height:20px;color:var(--muted)}
+.tile-label{font-size:14px;line-height:20px;color:var(--muted)}
+.tile-value{font-size:22px;line-height:28px;font-weight:700}
+.tile-note{font-size:14px;line-height:20px;font-weight:600}
+.tile-note.ok{color:var(--ready);display:inline-flex;align-items:flex-start;gap:3px}
+.tile-note.ok svg{width:14px;height:14px;flex-shrink:0;margin-top:3px}
+.tile-note.warn{color:var(--drying)}
+.tile-note.plain{color:var(--muted);font-weight:400}
+
+/* ผู้ซื้อ */
+.buyers{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.buyers-label{font-size:14px;line-height:20px;color:var(--muted)}
+.buyer-chip{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px;border-radius:var(--r-chip);background:#fff;border:1px solid var(--line);font-size:14px;font-weight:600}
+.buyer-chip svg{width:14px;height:14px;color:var(--ready)}
+
+/* แถวลิงก์แบบการ์ด (ผลตรวจเมล็ด) */
+.row-card{
+  display:flex;align-items:center;gap:12px;width:100%;background:var(--card);border:0;border-radius:var(--r-tile);
+  padding:12px;text-align:left;cursor:pointer;min-height:72px;
+}
+.row-card > svg{width:20px;height:20px;color:var(--muted);flex-shrink:0}
+.row-card-text{flex:1;display:flex;flex-direction:column}
+.row-card-title{font-size:16px;line-height:24px;font-weight:600}
+.row-card-sub{font-size:14px;line-height:20px;color:var(--muted)}
+.thumb{width:48px;height:48px;flex-shrink:0;border-radius:10px;background:#EDE6DC;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb svg{width:26px;height:26px;color:var(--coffee)}
+
+/* กล่องข้อความ */
+.note{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--r-tile);background:var(--note-bg);font-size:15px;line-height:23px}
+.note svg{width:20px;height:20px;flex-shrink:0;margin-top:2px;color:var(--coffee)}
+
+/* ---------- ปุ่มหลักติดล่าง ---------- */
+.footer{
+  position:fixed;left:0;right:0;bottom:0;z-index:5;max-width:480px;margin:0 auto;
+  background:#fff;border-top:1px solid var(--line);
+  padding:12px var(--gutter) calc(12px + var(--safe-b));
+  display:flex;flex-direction:column;gap:6px;
+}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:14px;cursor:pointer;
+  font-weight:700;text-decoration:none;
+}
+.btn svg{width:20px;height:20px}
+.btn-primary{height:56px;background:var(--primary);color:#fff;font-size:18px;line-height:24px}
+.btn-primary:active{background:var(--primary-ink)}
+.btn-primary:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.btn-outline{height:52px;background:#fff;border:2px solid var(--primary);color:var(--primary);font-size:17px}
+.btn-text{height:44px;background:none;color:var(--ink);font-size:16px;font-weight:600}
+.footer-hint{display:flex;align-items:center;gap:6px;font-size:14px;line-height:21px;color:var(--muted)}
+.footer-hint svg{width:16px;height:16px;flex-shrink:0}
+
+/* ---------- โหลด / ผิดพลาด ---------- */
+.sk{background:var(--skeleton);border-radius:8px;animation:sk 1.2s ease-in-out infinite}
+@keyframes sk{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}
+.error-box{margin-top:40px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.error-box > svg{width:44px;height:44px;color:var(--alert)}
+.error-box .btn{max-width:240px}
+
+/* ---------- 02 กำลังตาก ---------- */
+.moist-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.moist-big{font-size:52px;line-height:62px;font-weight:700;letter-spacing:-.5px}
+.moist-left{font-size:15px;line-height:22px;font-weight:600;color:var(--drying);text-align:right}
+.moist-left.done{color:var(--ready)}
+.dry-bar{height:12px;margin-top:10px;border-radius:999px;background:var(--drying-track);overflow:hidden}
+.dry-bar span{display:block;height:12px;border-radius:999px;background:var(--drying-bar)}
+.bar-labels{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:14px;line-height:20px;color:var(--muted)}
+.chart-card{padding:14px 18px}
+.card-sub-title{font-size:15px;line-height:22px;font-weight:600}
+.chart{display:block;width:100%;height:auto;margin-top:8px;overflow:visible}
+.chart-x{display:flex;justify-content:space-between;margin-top:6px;font-size:14px;line-height:20px;color:var(--muted)}
+.chart-legend{margin-top:2px;font-size:14px;line-height:20px;color:var(--ready)}
+.caption-body{margin-top:4px;font-size:15px;line-height:23px;color:var(--muted)}
+.kv-top{margin-top:0}
+.link-row-ink{color:var(--ink);font-weight:400;font-size:15px;line-height:22px}
+.link-row-ink svg{color:var(--muted);flex-shrink:0}
+
+/* ---------- 09 ต้องดูแล ---------- */
+.alert-card{display:flex;align-items:center;gap:16px;padding:14px 18px}
+.alert-num{display:flex;flex-direction:column;flex-shrink:0}
+.alert-num .label{font-size:14px;line-height:20px}
+.alert-big{font-size:36px;line-height:44px;font-weight:700;color:var(--alert)}
+.alert-text{flex:1;font-size:15px;line-height:23px}
+.todo{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.todo li{display:flex;gap:10px;font-size:15px;line-height:23px}
+.todo-no{width:24px;height:24px;flex-shrink:0;border-radius:50%;background:var(--ink);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.footer .btn-text{margin-top:-2px}
+
+/* ---------- 10 ข้อมูลไม่อัปเดต ---------- */
+.stale-banner{background:var(--alert-bg);border-radius:var(--r-card);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.stale-msg{display:flex;gap:10px}
+.stale-msg > svg{width:22px;height:22px;flex-shrink:0;margin-top:2px;color:var(--alert)}
+.stale-msg > span{display:flex;flex-direction:column}
+.stale-title{font-size:17px;line-height:26px;font-weight:700;color:var(--alert)}
+.stale-text{font-size:15px;line-height:23px}
+.btn-danger-outline{height:48px;border:2px solid var(--alert);border-radius:12px;background:#fff;color:var(--alert);font-size:16px}
+.btn-danger-outline:disabled{opacity:.7;cursor:wait}
+.stale-body{opacity:.55;display:flex;flex-direction:column;gap:12px}
+
+/* ---------- 07 กำลังขาย ---------- */
+.muted{color:var(--muted)}
+.card-title{font-size:16px;line-height:24px;font-weight:700;margin-bottom:6px}
+.big-count{font-size:34px;line-height:44px;font-weight:700}
+.big-count span{font-size:20px;font-weight:600;color:var(--muted)}
+.sack-bar{display:grid;gap:6px;margin-top:8px}
+.sack-bar span{height:12px;border-radius:6px;background:var(--selling-bg)}
+.sack-bar span.on{background:var(--selling)}
+.sack-bar-solid{display:block;height:12px;border-radius:6px;background:var(--selling-bg);overflow:hidden}
+.sack-bar-solid span{display:block;height:12px;background:var(--selling)}
+.kv{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-size:16px;line-height:24px}
+.kv-key{color:var(--muted)}
+.kv-val{font-weight:700}
+.floor-mini{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:14px;line-height:21px;color:var(--ready)}
+.floor-mini svg{width:16px;height:16px;flex-shrink:0}
+.steps-card{padding:14px 18px}
+.steps{margin:0;padding:0;list-style:none}
+.steps li{display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--line-soft)}
+.steps li:last-child{border-bottom:0}
+.step-time{width:42px;flex-shrink:0;font-size:14px;line-height:22px;color:var(--muted)}
+.step-text{flex:1;min-width:0;font-size:15px;line-height:22px;overflow-wrap:anywhere}
+.nobr{white-space:nowrap} /* ชื่อผู้ซื้อไม่ถูกตัดกลางคำ */
+.badge{flex-shrink:0;align-self:flex-start;display:inline-flex;align-items:center;gap:3px;padding:0 8px;border-radius:var(--r-chip);font-size:14px;line-height:22px;font-weight:600;white-space:nowrap}
+.badge svg{width:12px;height:12px}
+.badge-wait{background:#F1ECE5;color:var(--coffee)}
+.badge-ok{background:var(--ready-bg);color:var(--ready)}
+.badge-no{background:var(--alert-bg);color:var(--alert)}
+
+/* ---------- 08 ขายแล้ว ---------- */
+.sold-head{display:flex;align-items:center;gap:14px}
+.sold-check{width:56px;height:56px;flex-shrink:0;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center}
+.sold-check svg{width:30px;height:30px}
+.price-sold{font-size:44px;line-height:54px;font-weight:700;letter-spacing:-.5px}
+.cmp-bar{position:relative;height:12px;margin-top:12px;border-radius:999px;background:var(--line-soft)}
+.cmp-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--primary)}
+.cmp-tick{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;background:var(--ink);border-radius:1px}
+.cmp-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:14px;line-height:20px;color:var(--muted)}
+.cmp-note{margin-top:10px;padding:8px 12px;border-radius:10px;font-size:15px;line-height:22px;font-weight:600}
+.cmp-note.good{background:var(--ready-bg);color:var(--primary-deep)}
+.cmp-note.bad{background:var(--alert-bg);color:var(--alert)}
+.items-card{padding:12px 18px}
+.item-row{display:flex;align-items:center;gap:10px;min-height:40px;border-bottom:1px solid var(--line-soft);font-size:15px}
+.item-row:last-child{border-bottom:0}
+.item-no{width:22px;color:var(--muted)}
+.item-buyer{flex:1}
+.item-price{font-weight:600}
+
+/* ---------- 05 ผลตรวจเมล็ด ---------- */
+.back-btn{
+  align-self:flex-start;display:inline-flex;align-items:center;height:44px;margin:-12px 0 -4px -8px;padding:0 8px 0 0;
+  border:0;background:none;cursor:pointer;font-size:16px;font-weight:600;color:var(--primary);
+}
+.back-btn svg{width:24px;height:24px}
+.title-s{font-size:22px;line-height:32px;font-weight:700}
+.caption{font-size:14px;line-height:21px;color:var(--muted)}
+.vis{margin:0;border-radius:var(--r-tile);background:#EDE6DC;overflow:hidden}
+.vis img{display:block;width:100%;height:auto;max-height:60vh;object-fit:contain}
+.class-list{padding:6px 14px}
+.class-row{display:flex;align-items:center;gap:10px;min-height:44px;border-bottom:1px solid var(--line-soft);font-size:16px}
+.class-row:last-child{border-bottom:0}
+.dot{width:20px;height:14px;border-radius:50%;flex-shrink:0}
+.class-name{flex:1}
+.class-count{font-weight:700}
+.class-missing{padding:8px 0;font-size:14px;line-height:21px;color:var(--muted)}
+
+/* ---------- bottom sheet ---------- */
+.sheet-backdrop{
+  position:fixed;inset:0;z-index:20;background:rgba(23,16,10,.5);
+  display:flex;align-items:flex-end;justify-content:center;animation:fade .2s ease-out;
+}
+.sheet{
+  width:100%;max-width:480px;max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;
+  background:#fff;border-radius:var(--r-sheet) var(--r-sheet) 0 0;
+  padding:8px var(--gutter) calc(20px + var(--safe-b));
+  display:flex;flex-direction:column;gap:12px;animation:slide-up .22s ease-out;outline:none;
+}
+@keyframes fade{from{opacity:0}}
+@keyframes slide-up{from{transform:translateY(40px);opacity:.6}}
+@media (prefers-reduced-motion:reduce){.sheet,.sheet-backdrop{animation:none}}
+body.sheet-open{overflow:hidden}
+.sheet-handle{align-self:center;width:36px;height:5px;border-radius:3px;background:#D9CFC3;flex-shrink:0}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sheet-title{font-size:22px;line-height:32px;font-weight:700}
+.icon-btn{width:44px;height:44px;margin-right:-10px;flex-shrink:0;border:0;background:none;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;border-radius:12px}
+.icon-btn svg{width:22px;height:22px}
+.sheet-sub{margin-top:-8px;font-size:15px;line-height:22px;color:var(--muted)}
+
+/* ตารางขั้นบันไดราคา (หน้า 04) */
+.calc{border:1px solid var(--line-soft);border-radius:var(--r-tile)}
+.calc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line-soft)}
+.calc-row.last-factor{border-bottom:2px solid var(--ink)}
+.calc-row.total{border-bottom:0;padding:12px 14px;align-items:baseline}
+.calc-name{display:flex;flex-direction:column;font-size:16px;line-height:24px}
+.calc-hint{font-size:14px;line-height:20px;color:var(--muted)}
+.calc-val{font-size:17px;line-height:24px;font-weight:600;white-space:nowrap}
+.calc-row.total .calc-name{font-size:17px;line-height:26px;font-weight:700}
+.calc-row.total .calc-val{font-size:24px;line-height:32px;font-weight:700}
+.calc-row.total .calc-val small{font-size:15px;font-weight:400;color:var(--muted)}
+.calc-hint.down{color:var(--alert)}
+
+.callout{border-radius:var(--r-tile);padding:12px 14px;display:flex;gap:10px}
+.callout > svg{width:22px;height:22px;flex-shrink:0;margin-top:2px}
+.callout-text{display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:21px}
+.callout-title{font-size:16px;line-height:24px;font-weight:700}
+.callout-green{background:var(--ready-bg)} .callout-green > svg{color:var(--ready)} .callout-green .callout-title{color:var(--primary-deep)}
+.callout-amber{background:var(--drying-bg)} .callout-amber > svg{color:var(--drying)} .callout-amber .callout-title{color:#6B4000}
+.sheet .btn-outline{margin-top:4px}
+
+/* ยืนยันขาย (หน้า 06) */
+.sheet-icon{width:52px;height:52px;border-radius:50%;background:var(--ready-bg);color:var(--ready);display:flex;align-items:center;justify-content:center}
+.sheet-icon svg{width:28px;height:28px}
+.summary{border:1px solid var(--line-soft);border-radius:var(--r-tile);padding:0 14px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;border-bottom:1px solid var(--line-soft);font-size:16px}
+.sum-row:last-child{border-bottom:0}
+.sum-key{color:var(--muted)}
+.sum-val{font-weight:600;text-align:right}
+.sum-val.floor{font-weight:700;color:var(--ready)}
+.checks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:23px}
+.checks li{display:flex;gap:10px}
+.checks svg{width:20px;height:20px;flex-shrink:0;margin-top:2px;color:var(--ready)}
+.sheet-error{padding:10px 12px;border-radius:12px;background:var(--alert-bg);color:var(--alert);font-size:15px;line-height:22px;font-weight:600}
+.sheet-cancel{height:48px;margin-top:-6px;font-size:17px}
+
+/* ---------- แถบปุ่มเดโม (?demo=1) ---------- */
+.demo-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:6;max-width:480px;margin:0 auto;
+  display:flex;align-items:center;gap:6px;padding:4px 10px calc(4px + var(--safe-b));
+  background:#2B2420;color:#fff;
+}
+.demo-tag{font-size:13px;font-weight:700;color:#F5C26B;padding-right:2px}
+.demo-bar button{flex:1;height:44px;border:1px solid #5A4E46;border-radius:10px;background:#3A312B;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.demo-bar button:disabled{opacity:.6}
+body.demo .footer{bottom:calc(52px + var(--safe-b));padding-bottom:12px}
+body.demo .toast{bottom:calc(150px + var(--safe-b))}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + var(--safe-b));z-index:30;
+  max-width:calc(100% - 40px);padding:12px 16px;border-radius:12px;background:var(--ink);color:#fff;
+  font-size:15px;line-height:22px;box-shadow:0 4px 16px rgba(0,0,0,.2);
+}

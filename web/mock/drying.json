@@ -1,0 +1,84 @@
+{
+  "lot_id": "LOT-T49-1",
+  "sacks": 4,
+  "status": "DRYING",
+  "updated_at": "2026-11-19T10:42:00+07:00",
+  "moisture": {
+    "current": 14.2,
+    "start": 18.0,
+    "target": 12.5,
+    "history": [
+      {
+        "ts": "2026-11-19T06:42:00+07:00",
+        "value": 17.62,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:12:00+07:00",
+        "value": 17.21,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:42:00+07:00",
+        "value": 16.74,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:12:00+07:00",
+        "value": 16.31,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:42:00+07:00",
+        "value": 15.88,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T09:12:00+07:00",
+        "value": 15.4,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T09:42:00+07:00",
+        "value": 14.97,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T10:12:00+07:00",
+        "value": 14.55,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T10:42:00+07:00",
+        "value": 14.2,
+        "source": "ingest"
+      }
+    ]
+  },
+  "inspection": null,
+  "pricing": null,
+  "buyers": null,
+  "alert": null,
+  "sales": {
+    "sold_sacks": 0,
+    "avg_price": null,
+    "items": []
+  },
+  "events": [
+    {
+      "id": 1,
+      "ts": "2026-11-19T10:42:00+07:00",
+      "kind": "state",
+      "text": "เริ่มตากล็อตใหม่",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    }
+  ],
+  "simulated": {
+    "moisture": true,
+    "inspection": true,
+    "market": true
+  }
+}

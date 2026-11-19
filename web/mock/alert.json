@@ -1,0 +1,114 @@
+{
+  "lot_id": "LOT-T49-2",
+  "sacks": 3,
+  "status": "ALERT",
+  "updated_at": "2026-11-19T15:12:00+07:00",
+  "moisture": {
+    "current": 11.9,
+    "start": 18.22,
+    "target": 12.5,
+    "history": [
+      {
+        "ts": "2026-11-19T13:42:00+07:00",
+        "value": 13.1,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T14:12:00+07:00",
+        "value": 12.4,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T14:42:00+07:00",
+        "value": 12.2,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T15:12:00+07:00",
+        "value": 11.9,
+        "source": "ingest"
+      }
+    ]
+  },
+  "inspection": {
+    "ts": "2026-11-19T15:07:00+07:00",
+    "defect_pct": 8.6,
+    "vis_url": "https://<API_BASE>/static/vis/LOT-T49-2-sample.jpg",
+    "class_counts": null,
+    "total": null,
+    "grade_hint": null
+  },
+  "pricing": {
+    "base": 120.0,
+    "grade": "BELOW_STANDARD",
+    "grade_mult": 0.85,
+    "G": 0.7769,
+    "M": 1.0,
+    "S": 1.0,
+    "size_source": "default",
+    "value": 93.23,
+    "floor": 74.58,
+    "floor_ratio": 0.8
+  },
+  "buyers": {
+    "commercial": false,
+    "instant": true
+  },
+  "alert": {
+    "kind": "defect_high",
+    "threshold": 7.0,
+    "message": "เมล็ดเสียเกินเกณฑ์ผู้ซื้อเกรดพาณิชย์ (ไม่เกิน 7%)"
+  },
+  "sales": {
+    "sold_sacks": 0,
+    "avg_price": null,
+    "items": []
+  },
+  "events": [
+    {
+      "id": 13,
+      "ts": "2026-11-19T15:12:00+07:00",
+      "kind": "state",
+      "text": "เมล็ดเสียเกินเกณฑ์ผู้ซื้อเกรดพาณิชย์ (ไม่เกิน 7%)",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 12,
+      "ts": "2026-11-19T15:09:00+07:00",
+      "kind": "state",
+      "text": "ได้ผลตรวจเมล็ด เสีย 8.6%",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 11,
+      "ts": "2026-11-19T15:06:00+07:00",
+      "kind": "state",
+      "text": "แห้งถึงเกณฑ์แล้ว รอผลตรวจเมล็ด",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 10,
+      "ts": "2026-11-19T15:03:00+07:00",
+      "kind": "state",
+      "text": "เริ่มตากล็อตใหม่",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    }
+  ],
+  "simulated": {
+    "moisture": true,
+    "inspection": true,
+    "market": true
+  }
+}
