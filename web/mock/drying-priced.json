@@ -1,0 +1,105 @@
+{
+  "lot_id": "LOT-T49-1",
+  "sacks": 4,
+  "status": "DRYING",
+  "updated_at": "2026-11-19T10:42:00+07:00",
+  "moisture": {
+    "current": 14.2,
+    "start": 18,
+    "target": 12.5,
+    "history": [
+      {
+        "ts": "2026-11-19T06:42:00+07:00",
+        "value": 17.62,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:12:00+07:00",
+        "value": 17.21,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:42:00+07:00",
+        "value": 16.74,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:12:00+07:00",
+        "value": 16.31,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:42:00+07:00",
+        "value": 15.88,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T09:12:00+07:00",
+        "value": 15.4,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T09:42:00+07:00",
+        "value": 14.97,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T10:12:00+07:00",
+        "value": 14.55,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T10:42:00+07:00",
+        "value": 14.2,
+        "source": "ingest"
+      }
+    ]
+  },
+  "inspection": {
+    "ts": "2026-11-19T10:30:00+07:00",
+    "defect_pct": 4.8,
+    "vis_url": "https://<API_BASE>/static/vis/LOT-T49-1-sample.jpg",
+    "class_counts": null,
+    "total": null,
+    "grade_hint": null
+  },
+  "pricing": {
+    "base": 120,
+    "grade": "GRADE_2",
+    "grade_mult": 1,
+    "G": 0.952,
+    "M": 0.9466,
+    "S": 1,
+    "size_source": "default",
+    "value": 108.14,
+    "floor": 86.51,
+    "floor_ratio": 0.8
+  },
+  "buyers": {
+    "commercial": false,
+    "instant": true
+  },
+  "alert": null,
+  "sales": {
+    "sold_sacks": 0,
+    "avg_price": null,
+    "items": []
+  },
+  "events": [
+    {
+      "id": 1,
+      "ts": "2026-11-19T10:42:00+07:00",
+      "kind": "state",
+      "text": "เริ่มตากล็อตใหม่",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    }
+  ],
+  "simulated": {
+    "moisture": true,
+    "inspection": true,
+    "market": true
+  }
+}
