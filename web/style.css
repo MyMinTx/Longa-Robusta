@@ -320,6 +320,11 @@ body.sheet-open{overflow:hidden}
 .lot-card-value{font-size:24px;line-height:30px;font-weight:700;white-space:nowrap}
 .lot-card-value small{font-size:14px;font-weight:400;color:var(--muted)}
 
+.src-tag{align-self:flex-start;margin-top:-4px;padding:0 8px;border-radius:6px;background:#F1ECE5;color:var(--muted);font-size:14px;line-height:22px;font-weight:600}
+.src-tag.src-live{background:var(--selling-bg);color:var(--selling)}
+.lot-card-error{cursor:default}
+.lot-card-error .btn{height:48px;font-size:16px}
+
 /* ---------- แถบปุ่มเดโม (?demo=1) ---------- */
 .demo-bar{
   position:fixed;left:0;right:0;bottom:0;z-index:6;max-width:480px;margin:0 auto;

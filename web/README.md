@@ -13,7 +13,7 @@ python -m http.server 5173
 | พารามิเตอร์ | ใช้ทำอะไร |
 |---|---|
 | `?mock=<ชื่อ>` | ใช้ `mock/<ชื่อ>.json` ข้าม LIFF และ API: `drying` `drying-priced` `ready` `ready-counts` `selling` `selling-offers` `sold` `alert` `alert-moisture` `stale` |
-| `?mock=login` | **โหมดจำลองเกษตรกร:** หน้าล็อกอิน (บัญชีใน `mock/farmer.json` กรอกไว้ให้แล้ว) → รายการ 3 ล็อต → กดเข้าหน้าล็อต · ไม่เรียก backend |
+| `?mock=login` | **โหมดเกษตรกร:** หน้าล็อกอินจำลอง (บัญชีใน `mock/farmer.json` กรอกไว้ให้แล้ว) → รายการ 3 ล็อต: 1 ล็อตจริงจาก backend (`GET /lots/latest` ต้องใช้ตัวตน LINE) + 2 ล็อตตัวอย่างพร้อมขาย → กดเข้าหน้าล็อต |
 | `?lot=LOT-…` | เปิดล็อตนั้นตรง ๆ (ปุ่มใน Push) |
 | `?demo=1` | แถบปุ่มเดโมล่างจอ (รีเซ็ต / เร่งเวลา / ปกติ) และ "ขอตรวจใหม่" ส่ง `?improved=true` |
 | `?demokey=…` | ใส่ X-Demo-Key ครั้งเดียว เครื่องจะจำไว้ (อย่าแชร์ลิงก์นี้) |
