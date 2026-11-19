@@ -101,9 +101,9 @@ function toast(msg, ms = 3500) {
 
 /* ================= ข้อมูล ================= */
 // mock มีเวลาตายตัว เลื่อนให้เป็น "เพิ่งอัปเดต" (stale = 2 ชม.ก่อน) ไม่งั้นทุกหน้าจะกลายเป็นหน้าข้อมูลไม่อัปเดต
-function shiftMockTimes(lot) {
+function shiftMockTimes(lot, name = MOCK) {
   const minute = 60000;
-  const target = Math.floor(Date.now() / minute) * minute - (MOCK === "stale" ? 120 * minute : minute);
+  const target = Math.floor(Date.now() / minute) * minute - (name === "stale" ? 120 * minute : minute);
   const delta = target - new Date(lot.updated_at).getTime();
   (function walk(o) {
     if (Array.isArray(o)) return o.forEach(walk);
@@ -122,11 +122,12 @@ async function api(path, opts = {}) {
     if (opts.method === "POST") {
       await new Promise((r) => setTimeout(r, 900)); // หน่วงเหมือนเรียกผ่านเน็ต
       const next = MOCK_AFTER_POST.find(([re]) => re.test(path.split("?")[0]));
-      if (next) MOCK = next[1]; // ไม่เปลี่ยน URL: โหลดหน้าใหม่ = กลับไปเริ่มที่ mock เดิม
+      if (next) {
+        MOCK = next[1]; // ไม่เปลี่ยน URL: โหลดหน้าใหม่ = กลับไปเริ่มที่ mock เดิม
+        if (FARM && farm.lot) farm.mocks[farm.lot] = MOCK; // หน้ารายการล็อตจะเห็นสถานะใหม่ของล็อตนี้
+      }
     }
-    const r = await fetch(`mock/${MOCK}.json`, { cache: "no-store" });
-    if (!r.ok) throw Object.assign(new Error(`ไม่พบข้อมูลตัวอย่าง "${MOCK}"`), { status: r.status });
-    return shiftMockTimes(await r.json());
+    return loadMockLot(MOCK, FARM ? farm.lot : null);
   }
   if (!CFG.API_BASE) throw new Error("ยังไม่ได้ตั้งค่าที่อยู่ระบบ (API_BASE)");
   const headers = { "Content-Type": "application/json" };
@@ -161,6 +162,7 @@ const fetchLot = () => api(state.lotId ? `/lots/${encodeURIComponent(state.lotId
 
 async function refresh() {
   clearTimeout(state.pollTimer);
+  if (FARM && ["login", "lots"].includes(farmView())) return; // หน้าล็อกอิน/รายการล็อตไม่ต้องดึงข้อมูลล็อตซ้ำ
   try {
     setLot(await fetchLot());
   } catch (e) {
@@ -194,6 +196,180 @@ function schedulePoll() {
   state.pollTimer = setTimeout(refresh, ms);
 }
 
+/* ================= โหมดจำลองเกษตรกร (?mock=login) =================
+   หน้าล็อกอินด้วยบัญชีจำลอง → รายการล็อตของเกษตรกร (mock/farmer.json) → กดเข้าหน้าล็อต (03 ฯลฯ)
+   ทั้งหมดอยู่ในหน้าเว็บ ไม่เรียก backend · ไม่ใช่ระบบยืนยันตัวตนจริง (ของจริงใช้ตัวตนจาก LINE ผ่าน LIFF) */
+const FARM = MOCK === "login";
+const FARM_SESSION = "tgr49-farm-user";
+const farm = { data: null, mocks: {}, base: {}, lot: null, memUser: null };
+
+async function loadFarm() {
+  if (farm.data) return farm.data;
+  const r = await fetch("mock/farmer.json", { cache: "no-store" });
+  if (!r.ok) throw new Error('ไม่พบข้อมูลตัวอย่าง "farmer"');
+  farm.data = await r.json();
+  for (const l of farm.data.lots) farm.mocks[l.lot_id] = l.mock;
+  return farm.data;
+}
+function farmUser() {
+  try { return sessionStorage.getItem(FARM_SESSION) || farm.memUser; } catch { return farm.memUser; }
+}
+function setFarmUser(u) {
+  farm.memUser = u;
+  try { u ? sessionStorage.setItem(FARM_SESSION, u) : sessionStorage.removeItem(FARM_SESSION); } catch { /* ใช้ในหน่วยความจำแทน */ }
+}
+const hashLot = () => (location.hash.match(/^#lot=([A-Za-z0-9_-]+)$/) || [])[1] || null;
+function farmView() {
+  if (!farmUser()) return "login";
+  if (location.hash === "#inspection" && farm.lot) return "inspection";
+  const id = hashLot();
+  return id && farm.mocks[id] ? "lot" : "lots";
+}
+
+// โหลด mock ของล็อต · ในโหมดเกษตรกร ถ้าเป็นไฟล์สถานะถัดไป (selling/sold/…) ให้คงรหัสล็อตและราคาของล็อตที่เลือกไว้
+async function loadMockLot(name, farmLotId) {
+  const r = await fetch(`mock/${name}.json`, { cache: "no-store" });
+  if (!r.ok) throw Object.assign(new Error(`ไม่พบข้อมูลตัวอย่าง "${name}"`), { status: r.status });
+  const lot = shiftMockTimes(await r.json(), name);
+  if (!farmLotId) return lot;
+  const own = farm.data.lots.find((l) => l.lot_id === farmLotId)?.mock;
+  if (name === own) { farm.base[farmLotId] = structuredClone(lot); return lot; }
+  const base = farm.base[farmLotId] || (await loadMockLot(own, farmLotId));
+  lot.lot_id = farmLotId;
+  if (name !== "drying") Object.assign(lot, structuredClone({ sacks: base.sacks, pricing: base.pricing, inspection: base.inspection, buyers: base.buyers }));
+  // ไฟล์ขายแล้ว/กำลังขายมี 4 กระสอบ → ปรับรายกระสอบให้เท่าจำนวนกระสอบของล็อตนี้
+  const s = lot.sales;
+  if (s?.items?.length && lot.status === "SOLD") {
+    s.items = Array.from({ length: lot.sacks }, (_, i) => ({ ...s.items[i % s.items.length] }));
+    s.sold_sacks = lot.sacks;
+    s.avg_price = Math.round((s.items.reduce((a, it) => a + it.price, 0) / s.items.length) * 100) / 100;
+  } else if (s) s.sold_sacks = Math.min(s.sold_sacks || 0, lot.sacks);
+  return lot;
+}
+
+// หน้าล็อกอิน / รายการล็อต · คืน true ถ้าวาดเองแล้ว (render() ไม่ต้องทำต่อ)
+function renderFarm() {
+  const screen = $("#screen"), footer = $("#footer");
+  if (!farm.data) { // ยังโหลดบัญชีจำลองไม่เสร็จ (boot จะเรียก render อีกครั้ง)
+    screen.innerHTML = skeletonView();
+    return true;
+  }
+  const v = farmView();
+  if (v === "login" || v === "lots") {
+    clearTimeout(state.pollTimer);
+    farm.lot = null;
+    $("#sim-badge").hidden = false;
+    footer.innerHTML = "";
+    screen.className = "screen";
+    screen.style.paddingBottom = "";
+    if (v === "login") screen.innerHTML = loginView();
+    else drawLotList();
+    return true;
+  }
+  if (v === "lot") {
+    const id = hashLot();
+    if (id !== farm.lot) { // เปลี่ยนล็อต → โหลดข้อมูลล็อตนั้น
+      farm.lot = id;
+      MOCK = farm.mocks[id];
+      Object.assign(state, { lot: null, lotId: null, lastJson: "", lastScreen: null, loadError: null });
+      refresh();
+    }
+  }
+  return false;
+}
+
+function loginView() {
+  const u = farm.data?.user || {};
+  return `<form class="login" id="login-form" novalidate>
+    <div class="login-head">
+      <span class="login-logo" aria-hidden="true">49</span>
+      <div><h1 class="title">เข้าสู่ระบบ</h1><p class="subtitle">ตรวจล็อตกาแฟ · ขายแทน</p></div>
+    </div>
+    <label class="field"><span class="field-label">ชื่อผู้ใช้</span>
+      <input name="username" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(u.username)}" required></label>
+    <label class="field"><span class="field-label">รหัสผ่าน</span>
+      <input name="password" type="password" autocomplete="current-password" value="${esc(u.password)}" required></label>
+    <p class="sheet-error" role="alert" hidden></p>
+    <button class="btn btn-primary" type="submit">เข้าสู่ระบบ</button>
+    <div class="note">${svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>')}
+      <span>บัญชีทดลองกรอกไว้ให้แล้ว กด "เข้าสู่ระบบ" ได้เลย · ในแอป LINE จริงไม่ต้องล็อกอิน ระบบใช้บัญชี LINE ให้อัตโนมัติ</span></div>
+  </form>`;
+}
+
+async function submitLogin(form) {
+  const btn = form.querySelector("button[type=submit]"), err = form.querySelector(".sheet-error");
+  const u = form.username.value.trim(), p = form.password.value;
+  err.hidden = true;
+  btn.disabled = true;
+  btn.textContent = "กำลังเข้าสู่ระบบ…";
+  await new Promise((r) => setTimeout(r, 400));
+  const acc = farm.data.user;
+  if (!u || !p || u !== acc.username || p !== acc.password) {
+    btn.disabled = false;
+    btn.textContent = "เข้าสู่ระบบ";
+    err.textContent = !u || !p ? "กรอกชื่อผู้ใช้และรหัสผ่านให้ครบ" : "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+    err.hidden = false;
+    return;
+  }
+  setFarmUser(u);
+  history.replaceState(null, "", location.pathname + location.search);
+  render();
+  window.scrollTo(0, 0);
+}
+
+// การ์ดสรุปแต่ละล็อต: ตัวเลขเด่นเปลี่ยนตามสถานะ
+function lotFigure(lot) {
+  const p = lot.pricing, s = lot.sales || {}, m = lot.moisture || {};
+  switch (lot.status) {
+    case "DRYING": return ["ความชื้นตอนนี้", `${num(m.current)}%`, ""];
+    case "SELLING": return ["ขายแล้ว", `${s.sold_sacks ?? 0}/${lot.sacks}`, "กระสอบ"];
+    case "SOLD": return ["ราคาที่ได้", num(s.avg_price), "บ./กก."];
+    default: return ["ราคาประเมิน", num(p?.value), "บ./กก."];
+  }
+}
+function lotCard(lot) {
+  const [label, value, unit] = lotFigure(lot);
+  const insp = lot.inspection, p = lot.pricing;
+  const detail = [`${esc(lot.sacks)} กระสอบ`, insp && `เสีย ${num(insp.defect_pct)}%`, p && esc(gradeName(p.grade))].filter(Boolean).join(" · ");
+  return `<button class="lot-card" data-action="open-lot" data-lot="${esc(lot.lot_id)}" aria-label="ล็อต ${esc(lot.lot_id)} ${label} ${value} ${unit}">
+    <div class="status-row">${chip(lot.status)}${updatedAt(lot.updated_at)}</div>
+    <div class="lot-card-main">
+      <div class="lot-card-text"><span class="lot-card-id">${esc(lot.lot_id)}</span><span class="caption">${detail}</span></div>
+      <div class="lot-card-figure"><span class="caption">${label}</span><span class="lot-card-value">${value}${unit ? ` <small>${unit}</small>` : ""}</span></div>
+      ${ICON.chevron}
+    </div>
+  </button>`;
+}
+
+let listSeq = 0;
+async function drawLotList() {
+  const seq = ++listSeq, screen = $("#screen");
+  const name = farm.data.user.display_name || farmUser();
+  const head = `<div><h1 class="title">สวัสดี คุณ${esc(name.split(" ")[0])}</h1>
+    <p class="subtitle">ล็อตของคุณ ${farm.data.lots.length} ล็อต · แตะเพื่อดูรายละเอียด</p></div>`;
+  const logout = `<button class="btn btn-text" data-action="logout">ออกจากระบบ</button>`;
+  screen.innerHTML = head + farm.data.lots.map(() => `<div class="sk" style="height:132px;border-radius:16px"></div>`).join("");
+  try {
+    const lots = await Promise.all(farm.data.lots.map((l) => loadMockLot(farm.mocks[l.lot_id], l.lot_id)));
+    if (seq !== listSeq || farmView() !== "lots") return; // ผู้ใช้เปลี่ยนหน้าไปแล้ว
+    screen.innerHTML = head + lots.map(lotCard).join("") + logout;
+  } catch (e) {
+    if (seq === listSeq) screen.innerHTML = head + errorView(e.message) + logout;
+  }
+}
+
+function openFarmLot(id) {
+  if (!farm.mocks[id]) return;
+  history.pushState({ view: "farm-lot" }, "", `#lot=${encodeURIComponent(id)}`);
+  mainScroll = 0;
+  afterViewChange();
+}
+function backToFarmList() {
+  if (history.state?.view === "farm-lot") return history.back(); // popstate จะวาดหน้ารายการให้
+  history.replaceState(null, "", location.pathname + location.search);
+  afterViewChange();
+}
+
 /* ================= เลือกหน้าจอ ================= */
 function screenFor(lot) {
   const stale = Date.now() - new Date(lot.updated_at) > STALE_MS;
@@ -221,7 +397,7 @@ function goView(view) {
     mainScroll = window.scrollY;
     history.pushState({ view }, "", "#inspection");
   } else if (history.state?.view === "inspection") return history.back(); // popstate จะ render ให้
-  else history.replaceState(null, "", location.pathname + location.search);
+  else history.replaceState(null, "", location.pathname + location.search + (FARM && farm.lot ? `#lot=${farm.lot}` : ""));
   afterViewChange();
 }
 function afterViewChange() {
@@ -238,6 +414,7 @@ window.addEventListener("popstate", () => {
 
 function render() {
   const screen = $("#screen"), footer = $("#footer");
+  if (FARM && renderFarm()) return;
   const lot = state.lot;
   $("#sim-badge").hidden = !isSimulated(lot);
 
@@ -251,6 +428,8 @@ function render() {
   const name = state.loadError ? "offline"
     : currentView() === "inspection" && lot.inspection ? "inspection" : screenFor(lot);
   const view = (SCREENS[name] || renderTodo)(lot, name);
+  // โหมดเกษตรกร: หน้าล็อตมีปุ่มกลับไปรายการล็อต (หน้า 05 มีปุ่มกลับของตัวเองอยู่แล้ว)
+  if (FARM && name !== "inspection") view.body = `<button class="back-btn" data-action="farm-list">${svg('<path d="M15 6l-6 6 6 6"/>')}ล็อตทั้งหมด</button>` + view.body;
   screen.innerHTML = view.body;
   footer.innerHTML = view.footer ? `<div class="footer">${view.footer}</div>` : "";
   screen.className = "screen";
@@ -829,7 +1008,22 @@ function mountDemoBar() {
 }
 
 /* ================= ปุ่มต่าง ๆ ================= */
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "login-form") return;
+  e.preventDefault();
+  submitLogin(e.target);
+});
+
 const ACTIONS = {
+  "open-lot": (el) => openFarmLot(el.dataset.lot),
+  "farm-list": () => backToFarmList(),
+  logout: () => {
+    if (!confirm("ออกจากระบบ?")) return;
+    setFarmUser(null);
+    farm.lot = null;
+    history.replaceState(null, "", location.pathname + location.search);
+    render();
+  },
   demo: (el) => demoCall(el, el.dataset.what),
   retry: (el) => {
     el.disabled = true;
@@ -871,6 +1065,10 @@ async function boot() {
       // ยังไม่มี LIFF_ID หรือ init ไม่ผ่าน → ใช้ X-Dev-User ไปก่อน (ช่วงพัฒนา)
       console.warn("LIFF ไม่พร้อม ใช้โหมดพัฒนา:", e.message);
     }
+  }
+  if (FARM) {
+    try { await loadFarm(); } catch (e) { $("#screen").innerHTML = errorView(e.message); return; }
+    return render(); // หน้าล็อกอิน / รายการ / ล็อต (หน้าล็อตจะเริ่มดึงข้อมูลเอง)
   }
   refresh();
 }

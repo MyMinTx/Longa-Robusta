@@ -1,0 +1,22 @@
+{
+  "_note": "บัญชีจำลองสำหรับหน้าล็อกอิน (?mock=login) ไม่ใช่ระบบยืนยันตัวตนจริง",
+  "user": {
+    "username": "somchai",
+    "password": "robusta49",
+    "display_name": "สมชาย ใจดี"
+  },
+  "lots": [
+    {
+      "lot_id": "LOT-T49-1",
+      "mock": "ready"
+    },
+    {
+      "lot_id": "LOT-T49-2",
+      "mock": "lot-2"
+    },
+    {
+      "lot_id": "LOT-T49-3",
+      "mock": "lot-3"
+    }
+  ]
+}

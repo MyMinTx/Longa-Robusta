@@ -295,6 +295,31 @@ body.sheet-open{overflow:hidden}
 .sheet-error{padding:10px 12px;border-radius:12px;background:var(--alert-bg);color:var(--alert);font-size:15px;line-height:22px;font-weight:600}
 .sheet-cancel{height:48px;margin-top:-6px;font-size:17px}
 
+/* ---------- ล็อกอินจำลอง + รายการล็อต (?mock=login) ---------- */
+.login{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.login-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.login-logo{width:56px;height:56px;flex-shrink:0;border-radius:50%;background:var(--coffee);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px}
+.field-label{font-size:15px;line-height:22px;font-weight:600}
+.field input{
+  height:52px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;
+  font-family:inherit;font-size:17px;color:var(--ink);
+}
+.field input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,129,63,.18)}
+.login .btn-primary{margin-top:4px}
+.lot-card{
+  display:flex;flex-direction:column;gap:10px;width:100%;padding:14px 16px;border:0;border-radius:var(--r-card);
+  background:var(--card);box-shadow:0 1px 2px rgba(35,24,15,.06);text-align:left;cursor:pointer;
+}
+.lot-card:active{background:#FBF9F6}
+.lot-card-main{display:flex;align-items:center;gap:12px}
+.lot-card-main > svg{width:20px;height:20px;flex-shrink:0;color:var(--muted)}
+.lot-card-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.lot-card-id{font-size:18px;line-height:26px;font-weight:700}
+.lot-card-figure{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.lot-card-value{font-size:24px;line-height:30px;font-weight:700;white-space:nowrap}
+.lot-card-value small{font-size:14px;font-weight:400;color:var(--muted)}
+
 /* ---------- แถบปุ่มเดโม (?demo=1) ---------- */
 .demo-bar{
   position:fixed;left:0;right:0;bottom:0;z-index:6;max-width:480px;margin:0 auto;
