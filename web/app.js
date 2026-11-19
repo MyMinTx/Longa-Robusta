@@ -5,6 +5,9 @@
    ?demo=1                                      แถบปุ่มเดโม (ทำทีหลัง) */
 
 const CFG = window.APP_CONFIG || {};
+// กันพิมพ์ผิดใน config.js: ช่องว่างหัวท้าย / "/" ท้าย URL
+CFG.API_BASE = String(CFG.API_BASE || "").trim().replace(/\/+$/, "");
+CFG.LIFF_ID = String(CFG.LIFF_ID || "").trim();
 // เปิดผ่าน https://liff.line.me/<LIFF_ID>?lot=… ครั้งแรก LINE จะส่ง query มาใน liff.state (เช่น "?lot=LOT-T49-1")
 // รวมเข้ามาด้วย ไม่งั้นปุ่มใน Push จะไม่เปิดล็อตที่ถูก
 const params = (() => {
