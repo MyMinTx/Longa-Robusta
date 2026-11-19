@@ -5,7 +5,14 @@
    ?demo=1                                      แถบปุ่มเดโม (ทำทีหลัง) */
 
 const CFG = window.APP_CONFIG || {};
-const params = new URLSearchParams(location.search);
+// เปิดผ่าน https://liff.line.me/<LIFF_ID>?lot=… ครั้งแรก LINE จะส่ง query มาใน liff.state (เช่น "?lot=LOT-T49-1")
+// รวมเข้ามาด้วย ไม่งั้นปุ่มใน Push จะไม่เปิดล็อตที่ถูก
+const params = (() => {
+  const p = new URLSearchParams(location.search);
+  const st = p.get("liff.state");
+  if (st && st.includes("?")) new URLSearchParams(st.slice(st.indexOf("?"))).forEach((v, k) => { if (!p.has(k)) p.set(k, v); });
+  return p;
+})();
 let MOCK = /^[a-z0-9_-]+$/i.test(params.get("mock") || "") ? params.get("mock") : null;
 // โหมด mock: POST แล้วสลับไปใช้ไฟล์ mock ของสถานะถัดไป (จำลองสิ่งที่ backend ตอบ)
 const MOCK_AFTER_POST = [[/\/sell$/, "selling"], [/\/inspect/, "ready"], [/^\/lots$/, "drying"], [/^\/demo\/reset$/, "drying"]];
@@ -133,6 +140,20 @@ async function api(path, opts = {}) {
   return body;
 }
 
+/* 401 = ID token ใช้ไม่ได้ (หมดอายุ / ยังไม่ได้ล็อกอิน)
+   นอก LINE: พาไปล็อกอินใหม่ · ใน LINE: โหลดหน้าใหม่ 1 ครั้งเพื่อขอ token ใหม่ (liff.login ใช้ในแอป LINE ไม่ได้)
+   LIFF ยังไม่พร้อม (ไม่มี LIFF_ID / init ไม่ผ่าน): คืน false ให้แสดงข้อความจาก backend ตามปกติ */
+function handleAuthError() {
+  if (!state.liffReady) return false;
+  if (!liff.isInClient()) { liff.login({ redirectUri: location.href }); return true; }
+  try {
+    if (sessionStorage.getItem("tgr49-reauth")) return false; // ลองไปแล้ว ไม่วนซ้ำ
+    sessionStorage.setItem("tgr49-reauth", "1");
+  } catch { return false; }
+  location.reload();
+  return true;
+}
+
 const fetchLot = () => api(state.lotId ? `/lots/${encodeURIComponent(state.lotId)}` : "/lots/latest");
 
 async function refresh() {
@@ -140,7 +161,7 @@ async function refresh() {
   try {
     setLot(await fetchLot());
   } catch (e) {
-    if (e.status === 401 && !MOCK && window.liff) return liff.login({ redirectUri: location.href });
+    if (e.status === 401 && handleAuthError()) return;
     if (e.status === 404 && state.lotId) { state.lotId = null; return refresh(); }
     state.loadError = e.message || "เชื่อมต่อระบบไม่ได้";
     render();
@@ -149,6 +170,7 @@ async function refresh() {
 }
 
 function setLot(lot) {
+  try { sessionStorage.removeItem("tgr49-reauth"); } catch { /* ไม่เป็นไร */ }
   const recovered = state.loadError != null;
   state.loadError = null;
   state.lotId = lot.lot_id;
@@ -519,7 +541,7 @@ async function runPost(btn, path, busyText) {
     schedulePoll();
     return lot;
   } catch (e) {
-    if (e.status === 401 && !MOCK && window.liff) { liff.login({ redirectUri: location.href }); return null; }
+    if (e.status === 401 && handleAuthError()) return null;
     btn.disabled = false;
     btn.innerHTML = idleHtml;
     if (e.status === 409 || e.status === 423) { toast(e.message, 5000); state.lastJson = ""; refresh(); }
@@ -719,7 +741,7 @@ async function confirmSell(btn) {
     window.scrollTo(0, 0);
     schedulePoll();
   } catch (e) {
-    if (e.status === 401 && !MOCK && window.liff) return liff.login({ redirectUri: location.href });
+    if (e.status === 401 && handleAuthError()) return;
     if (e.status === 409 || e.status === 423) {
       // สถานะเปลี่ยนไปแล้ว / ข้อมูลเก่า → ปิด sheet ดึงล็อตใหม่ แล้วบอกเหตุผลจาก backend
       closeSheet();
@@ -841,6 +863,7 @@ async function boot() {
       await liff.init({ liffId: CFG.LIFF_ID });
       if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
       state.idToken = liff.getIDToken();
+      state.liffReady = true;
     } catch (e) {
       // ยังไม่มี LIFF_ID หรือ init ไม่ผ่าน → ใช้ X-Dev-User ไปก่อน (ช่วงพัฒนา)
       console.warn("LIFF ไม่พร้อม ใช้โหมดพัฒนา:", e.message);
