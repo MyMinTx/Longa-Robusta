@@ -1,0 +1,155 @@
+{
+  "lot_id": "LOT-T49-1",
+  "sacks": 4,
+  "status": "READY",
+  "updated_at": "2026-11-19T08:40:00+07:00",
+  "moisture": {
+    "current": 11.93,
+    "start": 18.0,
+    "target": 12.5,
+    "history": [
+      {
+        "ts": "2026-11-19T01:40:00+07:00",
+        "value": 17.62,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T02:10:00+07:00",
+        "value": 17.21,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T02:40:00+07:00",
+        "value": 16.74,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T03:10:00+07:00",
+        "value": 16.31,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T03:40:00+07:00",
+        "value": 15.88,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T04:10:00+07:00",
+        "value": 15.4,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T04:40:00+07:00",
+        "value": 14.97,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T05:10:00+07:00",
+        "value": 14.55,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T05:40:00+07:00",
+        "value": 14.2,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T06:10:00+07:00",
+        "value": 13.81,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T06:40:00+07:00",
+        "value": 13.32,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:10:00+07:00",
+        "value": 12.91,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:40:00+07:00",
+        "value": 12.44,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:10:00+07:00",
+        "value": 12.18,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:40:00+07:00",
+        "value": 11.93,
+        "source": "ingest"
+      }
+    ]
+  },
+  "inspection": {
+    "ts": "2026-11-19T08:35:00+07:00",
+    "defect_pct": 4.8,
+    "vis_url": "https://<API_BASE>/static/vis/LOT-T49-1-sample.jpg",
+    "class_counts": null,
+    "total": null,
+    "grade_hint": null
+  },
+  "pricing": {
+    "base": 120.0,
+    "grade": "GRADE_2",
+    "grade_mult": 1.0,
+    "G": 0.952,
+    "M": 1.0,
+    "S": 1.0,
+    "size_source": "default",
+    "value": 114.24,
+    "floor": 91.39,
+    "floor_ratio": 0.8
+  },
+  "buyers": {
+    "commercial": true,
+    "instant": true
+  },
+  "alert": null,
+  "sales": {
+    "sold_sacks": 0,
+    "avg_price": null,
+    "items": []
+  },
+  "events": [
+    {
+      "id": 3,
+      "ts": "2026-11-19T08:40:00+07:00",
+      "kind": "state",
+      "text": "พร้อมขาย",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 2,
+      "ts": "2026-11-19T08:37:00+07:00",
+      "kind": "state",
+      "text": "ได้ผลตรวจเมล็ด เสีย 4.8%",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 1,
+      "ts": "2026-11-19T08:34:00+07:00",
+      "kind": "state",
+      "text": "เริ่มตากล็อตใหม่",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    }
+  ],
+  "simulated": {
+    "moisture": true,
+    "inspection": true,
+    "market": true
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "lot_id": "LOT-T49-1",
+  "sacks": 4,
+  "status": "SOLD",
+  "updated_at": "2026-11-19T14:41:00+07:00",
+  "moisture": {
+    "current": 11.93,
+    "start": 18.0,
+    "target": 12.5,
+    "history": [
+      {
+        "ts": "2026-11-19T06:42:00+07:00",
+        "value": 17.62,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:12:00+07:00",
+        "value": 17.21,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T07:42:00+07:00",
+        "value": 16.74,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:12:00+07:00",
+        "value": 16.31,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T08:42:00+07:00",
+        "value": 15.88,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T09:12:00+07:00",
+        "value": 15.4,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T09:42:00+07:00",
+        "value": 14.97,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T10:12:00+07:00",
+        "value": 14.55,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T10:42:00+07:00",
+        "value": 14.2,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T11:12:00+07:00",
+        "value": 13.81,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T11:42:00+07:00",
+        "value": 13.32,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T12:12:00+07:00",
+        "value": 12.91,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T12:42:00+07:00",
+        "value": 12.44,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T13:12:00+07:00",
+        "value": 12.18,
+        "source": "ingest"
+      },
+      {
+        "ts": "2026-11-19T13:42:00+07:00",
+        "value": 11.93,
+        "source": "ingest"
+      }
+    ]
+  },
+  "inspection": {
+    "ts": "2026-11-19T13:37:00+07:00",
+    "defect_pct": 4.8,
+    "vis_url": "https://<API_BASE>/static/vis/LOT-T49-1-sample.jpg",
+    "class_counts": null,
+    "total": null,
+    "grade_hint": null
+  },
+  "pricing": {
+    "base": 120.0,
+    "grade": "GRADE_2",
+    "grade_mult": 1.0,
+    "G": 0.952,
+    "M": 1.0,
+    "S": 1.0,
+    "size_source": "default",
+    "value": 114.24,
+    "floor": 91.39,
+    "floor_ratio": 0.8
+  },
+  "buyers": {
+    "commercial": true,
+    "instant": true
+  },
+  "alert": null,
+  "sales": {
+    "sold_sacks": 4,
+    "avg_price": 113.38,
+    "items": [
+      {
+        "ts": "2026-11-19T14:14:00+07:00",
+        "sacks": 1,
+        "price": 112.0,
+        "buyer": "สยามคอมเมิร์ซ"
+      },
+      {
+        "ts": "2026-11-19T14:23:00+07:00",
+        "sacks": 1,
+        "price": 116.5,
+        "buyer": "ชุมพรคั่วบด"
+      },
+      {
+        "ts": "2026-11-19T14:32:00+07:00",
+        "sacks": 1,
+        "price": 114.0,
+        "buyer": "ชุมพรคั่วบด"
+      },
+      {
+        "ts": "2026-11-19T14:41:00+07:00",
+        "sacks": 1,
+        "price": 111.0,
+        "buyer": "อินสแตนท์ไทย"
+      }
+    ]
+  },
+  "events": [
+    {
+      "id": 9,
+      "ts": "2026-11-19T14:41:00+07:00",
+      "kind": "state",
+      "text": "ขายครบทุกกระสอบแล้ว",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 8,
+      "ts": "2026-11-19T14:38:00+07:00",
+      "kind": "sold",
+      "text": "ขาย 1 กระสอบ ให้อินสแตนท์ไทย ที่ 111.0",
+      "sacks": 1,
+      "price": 111.0,
+      "buyer": "อินสแตนท์ไทย",
+      "result": "sold"
+    },
+    {
+      "id": 7,
+      "ts": "2026-11-19T14:35:00+07:00",
+      "kind": "sold",
+      "text": "ขาย 1 กระสอบ ให้ชุมพรคั่วบด ที่ 114.0",
+      "sacks": 1,
+      "price": 114.0,
+      "buyer": "ชุมพรคั่วบด",
+      "result": "sold"
+    },
+    {
+      "id": 6,
+      "ts": "2026-11-19T14:32:00+07:00",
+      "kind": "sold",
+      "text": "ขาย 1 กระสอบ ให้ชุมพรคั่วบด ที่ 116.5",
+      "sacks": 1,
+      "price": 116.5,
+      "buyer": "ชุมพรคั่วบด",
+      "result": "sold"
+    },
+    {
+      "id": 5,
+      "ts": "2026-11-19T14:29:00+07:00",
+      "kind": "sold",
+      "text": "ขาย 1 กระสอบ ให้สยามคอมเมิร์ซ ที่ 112.0",
+      "sacks": 1,
+      "price": 112.0,
+      "buyer": "สยามคอมเมิร์ซ",
+      "result": "sold"
+    },
+    {
+      "id": 4,
+      "ts": "2026-11-19T14:26:00+07:00",
+      "kind": "start",
+      "text": "เริ่มขาย (คุณกดยืนยัน)",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 3,
+      "ts": "2026-11-19T14:23:00+07:00",
+      "kind": "state",
+      "text": "พร้อมขาย",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 2,
+      "ts": "2026-11-19T14:20:00+07:00",
+      "kind": "state",
+      "text": "ได้ผลตรวจเมล็ด เสีย 4.8%",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    },
+    {
+      "id": 1,
+      "ts": "2026-11-19T14:17:00+07:00",
+      "kind": "state",
+      "text": "เริ่มตากล็อตใหม่",
+      "sacks": null,
+      "price": null,
+      "buyer": null,
+      "result": null
+    }
+  ],
+  "simulated": {
+    "moisture": true,
+    "inspection": true,
+    "market": true
+  }
+}

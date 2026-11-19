@@ -1,0 +1,7 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+httpx>=0.27
+pillow>=10
+python-dotenv>=1.0
+pyserial>=3.5   # ใช้เมื่อ MOISTURE_SOURCE=serial
+pytest>=8       # สำหรับเทสต์
