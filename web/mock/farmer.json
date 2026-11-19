@@ -8,7 +8,7 @@
   "lots": [
     {
       "lot_id": "LOT-T49-1",
-      "mock": "ready"
+      "mock": "ready-counts"
     },
     {
       "lot_id": "LOT-T49-2",
