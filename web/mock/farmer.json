@@ -1,5 +1,5 @@
 {
-  "_note": "บัญชีจำลองสำหรับหน้าล็อกอิน (?mock=login) ไม่ใช่ระบบยืนยันตัวตนจริง",
+  "_note": "บัญชีจำลองสำหรับหน้าล็อกอิน (?mock=login) ไม่ใช่ระบบยืนยันตัวตนจริง · {source:api} = ล็อตจริงจาก backend (GET /lots/latest) · {lot_id,mock} = ล็อตตัวอย่างในหน้าเว็บ",
   "user": {
     "username": "somchai",
     "password": "robusta49",
@@ -7,15 +7,14 @@
   },
   "lots": [
     {
-      "lot_id": "LOT-T49-1",
-      "mock": "ready-counts"
+      "source": "api"
     },
     {
-      "lot_id": "LOT-T49-2",
+      "lot_id": "LOT-T49-A",
       "mock": "lot-2"
     },
     {
-      "lot_id": "LOT-T49-3",
+      "lot_id": "LOT-T49-B",
       "mock": "lot-3"
     }
   ]

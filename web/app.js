@@ -118,7 +118,7 @@ function shiftMockTimes(lot, name = MOCK) {
 }
 
 async function api(path, opts = {}) {
-  if (MOCK) {
+  if (MOCK && !opts.live) { // opts.live = บังคับเรียก backend จริง (ล็อตจริงในโหมดเกษตรกร)
     if (opts.method === "POST") {
       await new Promise((r) => setTimeout(r, 900)); // หน่วงเหมือนเรียกผ่านเน็ต
       const next = MOCK_AFTER_POST.find(([re]) => re.test(path.split("?")[0]));
@@ -198,9 +198,12 @@ function schedulePoll() {
 
 /* ================= โหมดจำลองเกษตรกร (?mock=login) =================
    หน้าล็อกอินด้วยบัญชีจำลอง → รายการล็อตของเกษตรกร (mock/farmer.json) → กดเข้าหน้าล็อต (03 ฯลฯ)
-   ทั้งหมดอยู่ในหน้าเว็บ ไม่เรียก backend · ไม่ใช่ระบบยืนยันตัวตนจริง (ของจริงใช้ตัวตนจาก LINE ผ่าน LIFF) */
+   รายการล็อตมี 2 แบบ: {"source":"api"} = ล็อตจริงจาก backend (GET /lots/latest ใช้ตัวตน LINE)
+                       {"lot_id","mock"}  = ล็อตตัวอย่างจากไฟล์ mock ในหน้าเว็บ
+   หน้าล็อกอินเป็นของจำลอง ไม่ใช่ระบบยืนยันตัวตนจริง (backend ยังใช้ตัวตนจาก LINE ผ่าน LIFF) */
 const FARM = MOCK === "login";
 const FARM_SESSION = "tgr49-farm-user";
+const LIVE = "@api"; // ค่าใน farm.mocks ของล็อตที่มาจาก backend
 const farm = { data: null, mocks: {}, base: {}, lot: null, memUser: null };
 
 async function loadFarm() {
@@ -208,8 +211,15 @@ async function loadFarm() {
   const r = await fetch("mock/farmer.json", { cache: "no-store" });
   if (!r.ok) throw new Error('ไม่พบข้อมูลตัวอย่าง "farmer"');
   farm.data = await r.json();
-  for (const l of farm.data.lots) farm.mocks[l.lot_id] = l.mock;
+  for (const l of farm.data.lots) if (l.mock) farm.mocks[l.lot_id] = l.mock;
   return farm.data;
+}
+
+// ล็อตจริง: ล็อตล่าสุดของผู้ใช้ใน backend (ไม่มี = backend สร้างให้ เริ่มที่กำลังตาก)
+async function loadLiveLot() {
+  const lot = await api("/lots/latest", { live: true });
+  farm.mocks[lot.lot_id] = LIVE;
+  return lot;
 }
 function farmUser() {
   try { return sessionStorage.getItem(FARM_SESSION) || farm.memUser; } catch { return farm.memUser; }
@@ -233,9 +243,9 @@ async function loadMockLot(name, farmLotId) {
   const lot = shiftMockTimes(await r.json(), name);
   if (!farmLotId) return lot;
   const own = farm.data.lots.find((l) => l.lot_id === farmLotId)?.mock;
+  lot.lot_id = farmLotId;
   if (name === own) { farm.base[farmLotId] = structuredClone(lot); return lot; }
   const base = farm.base[farmLotId] || (await loadMockLot(own, farmLotId));
-  lot.lot_id = farmLotId;
   if (name !== "drying") Object.assign(lot, structuredClone({ sacks: base.sacks, pricing: base.pricing, inspection: base.inspection, buyers: base.buyers }));
   // ไฟล์ขายแล้ว/กำลังขายมี 4 กระสอบ → ปรับรายกระสอบให้เท่าจำนวนกระสอบของล็อตนี้
   const s = lot.sales;
@@ -270,8 +280,9 @@ function renderFarm() {
     const id = hashLot();
     if (id !== farm.lot) { // เปลี่ยนล็อต → โหลดข้อมูลล็อตนั้น
       farm.lot = id;
-      MOCK = farm.mocks[id];
-      Object.assign(state, { lot: null, lotId: null, lastJson: "", lastScreen: null, loadError: null });
+      const live = farm.mocks[id] === LIVE;
+      MOCK = live ? null : farm.mocks[id]; // ล็อตจริง → api() เรียก backend ตามปกติ
+      Object.assign(state, { lot: null, lotId: live ? id : null, lastJson: "", lastScreen: null, loadError: null });
       refresh();
     }
   }
@@ -327,12 +338,16 @@ function lotFigure(lot) {
     default: return ["ราคาประเมิน", num(p?.value), "บ./กก."];
   }
 }
-function lotCard(lot) {
+const sourceTag = (live) => live
+  ? `<span class="src-tag src-live">ข้อมูลจากระบบ (backend)</span>`
+  : `<span class="src-tag">ตัวอย่างในหน้าเว็บ</span>`;
+function lotCard(lot, live = false) {
   const [label, value, unit] = lotFigure(lot);
   const insp = lot.inspection, p = lot.pricing;
   const detail = [`${esc(lot.sacks)} กระสอบ`, insp && `เสีย ${num(insp.defect_pct)}%`, p && esc(gradeName(p.grade))].filter(Boolean).join(" · ");
   return `<button class="lot-card" data-action="open-lot" data-lot="${esc(lot.lot_id)}" aria-label="ล็อต ${esc(lot.lot_id)} ${label} ${value} ${unit}">
     <div class="status-row">${chip(lot.status)}${updatedAt(lot.updated_at)}</div>
+    ${sourceTag(live)}
     <div class="lot-card-main">
       <div class="lot-card-text"><span class="lot-card-id">${esc(lot.lot_id)}</span><span class="caption">${detail}</span></div>
       <div class="lot-card-figure"><span class="caption">${label}</span><span class="lot-card-value">${value}${unit ? ` <small>${unit}</small>` : ""}</span></div>
@@ -349,13 +364,29 @@ async function drawLotList() {
     <p class="subtitle">ล็อตของคุณ ${farm.data.lots.length} ล็อต · แตะเพื่อดูรายละเอียด</p></div>`;
   const logout = `<button class="btn btn-text" data-action="logout">ออกจากระบบ</button>`;
   screen.innerHTML = head + farm.data.lots.map(() => `<div class="sk" style="height:132px;border-radius:16px"></div>`).join("");
-  try {
-    const lots = await Promise.all(farm.data.lots.map((l) => loadMockLot(farm.mocks[l.lot_id], l.lot_id)));
-    if (seq !== listSeq || farmView() !== "lots") return; // ผู้ใช้เปลี่ยนหน้าไปแล้ว
-    screen.innerHTML = head + lots.map(lotCard).join("") + logout;
-  } catch (e) {
-    if (seq === listSeq) screen.innerHTML = head + errorView(e.message) + logout;
-  }
+  // โหลดทุกล็อตพร้อมกัน · ล็อตไหนโหลดไม่ได้ แสดงการ์ดบอกเหตุผลแทน ล็อตอื่นยังใช้ได้
+  const items = await Promise.all(farm.data.lots.map((l) =>
+    (l.source === "api" ? loadLiveLot() : loadMockLot(farm.mocks[l.lot_id], l.lot_id))
+      .then((lot) => ({ lot, live: l.source === "api" }))
+      .catch((error) => ({ error, live: l.source === "api" }))));
+  if (seq !== listSeq || farmView() !== "lots") return; // ผู้ใช้เปลี่ยนหน้าไปแล้ว
+  screen.innerHTML = head + items.map((it) => (it.lot ? lotCard(it.lot, it.live) : lotErrorCard(it.error, it.live))).join("") + logout;
+}
+
+// การ์ดล็อตที่โหลดไม่ได้ (ส่วนใหญ่คือล็อตจริงที่ต้องใช้ตัวตน LINE หรือ backend ปิดอยู่)
+function lotErrorCard(e, live) {
+  const needLine = live && e.status === 401;
+  const canLogin = needLine && state.liffReady && !liff.isInClient();
+  const msg = needLine
+    ? (state.liffReady ? "ล็อตจริงในระบบต้องยืนยันตัวตนด้วย LINE" : "ล็อตจริงในระบบต้องเปิดผ่านแอป LINE (หรือตั้งค่า LIFF_ID ก่อน)")
+    : (e.message || "เชื่อมต่อระบบไม่ได้");
+  return `<div class="lot-card lot-card-error" role="group" aria-label="ล็อตที่โหลดไม่ได้">
+    <div class="status-row"><span class="chip chip-alert">${ICON.offline}โหลดไม่ได้</span></div>
+    ${sourceTag(live)}
+    <div class="lot-card-text"><span class="lot-card-id">${live ? "ล็อตของคุณในระบบ" : "ล็อตตัวอย่าง"}</span><span class="caption">${esc(msg)}</span></div>
+    ${canLogin ? `<button class="btn btn-outline" data-action="liff-login">เข้าสู่ระบบด้วย LINE</button>`
+      : `<button class="btn btn-outline" data-action="retry-list">${ICON.retry}ลองใหม่</button>`}
+  </div>`;
 }
 
 function openFarmLot(id) {
@@ -950,7 +981,7 @@ function demoKey(ask) {
     if (key) localStorage.setItem(DEMO_KEY_STORE, key);
     else key = localStorage.getItem(DEMO_KEY_STORE);
   } catch { /* เบราว์เซอร์ไม่ให้ใช้ storage */ }
-  if (!key && ask && !MOCK) {
+  if (!key && ask && (!MOCK || FARM)) {
     key = (prompt("ใส่ X-Demo-Key (ขอจากธร)") || "").trim();
     try { if (key) localStorage.setItem(DEMO_KEY_STORE, key); } catch { /* ไม่เป็นไร */ }
   }
@@ -964,7 +995,7 @@ async function demoCall(btn, what) {
   if (sending) return;
   if (what === "reset" && !confirm("รีเซ็ตเดโม? ล็อตทั้งหมดของผู้ใช้นี้จะถูกลบ แล้วเริ่มล็อตใหม่")) return;
   const key = demoKey(true);
-  if (!key && !MOCK) return toast("ยังไม่ได้ใส่ X-Demo-Key");
+  if (!key && (!MOCK || FARM)) return toast("ยังไม่ได้ใส่ X-Demo-Key");
   sending = true;
   const label = btn.textContent;
   btn.disabled = true;
@@ -972,7 +1003,7 @@ async function demoCall(btn, what) {
   try {
     const headers = { "X-Demo-Key": key };
     if (what === "reset") {
-      const lot = await api("/demo/reset", { method: "POST", headers });
+      const lot = await api("/demo/reset", { method: "POST", headers, live: FARM });
       closeSheet();
       if (currentView() !== "main") history.replaceState(null, "", location.pathname + location.search);
       state.lotId = lot.lot_id; // ล็อตเดิมถูกลบแล้ว ตามล็อตใหม่ไป
@@ -981,8 +1012,8 @@ async function demoCall(btn, what) {
       schedulePoll();
       toast("รีเซ็ตแล้ว เริ่มล็อตใหม่");
     } else {
-      const r = await api("/demo/speed", { method: "POST", headers, body: JSON.stringify(DEMO_SPEED[what]) });
-      const s = MOCK ? DEMO_SPEED[what] : r;
+      const r = await api("/demo/speed", { method: "POST", headers, live: FARM, body: JSON.stringify(DEMO_SPEED[what]) });
+      const s = MOCK && !FARM ? DEMO_SPEED[what] : r;
       toast(`${what === "fast" ? "เร่งเวลาแล้ว" : "กลับเป็นปกติแล้ว"} · ความชื้นทุก ${s.moisture_tick_seconds} วิ · ตลาดทุก ${s.market_round_seconds} วิ`);
     }
   } catch (e) {
@@ -1016,6 +1047,8 @@ document.addEventListener("submit", (e) => {
 
 const ACTIONS = {
   "open-lot": (el) => openFarmLot(el.dataset.lot),
+  "retry-list": () => render(),
+  "liff-login": () => state.liffReady && liff.login({ redirectUri: location.href }),
   "farm-list": () => backToFarmList(),
   logout: () => {
     if (!confirm("ออกจากระบบ?")) return;
@@ -1054,13 +1087,15 @@ document.addEventListener("visibilitychange", () => {
 async function boot() {
   mountDemoBar();
   render(); // skeleton
-  if (!MOCK) {
+  if (!MOCK || FARM) { // โหมดเกษตรกรมีล็อตจริงจาก backend → ต้องใช้ตัวตน LINE ด้วย
     try {
       if (!window.liff || !CFG.LIFF_ID) throw new Error("no-liff");
       await liff.init({ liffId: CFG.LIFF_ID });
-      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
-      state.idToken = liff.getIDToken();
       state.liffReady = true;
+      if (!liff.isLoggedIn()) {
+        // โหมดปกติ: พาไปล็อกอิน LINE ทันที · โหมดเกษตรกร: ไม่บังคับ (ล็อตตัวอย่างใช้ได้เลย ล็อตจริงมีปุ่มล็อกอินให้)
+        if (!FARM) { liff.login({ redirectUri: location.href }); return; }
+      } else state.idToken = liff.getIDToken();
     } catch (e) {
       // ยังไม่มี LIFF_ID หรือ init ไม่ผ่าน → ใช้ X-Dev-User ไปก่อน (ช่วงพัฒนา)
       console.warn("LIFF ไม่พร้อม ใช้โหมดพัฒนา:", e.message);
