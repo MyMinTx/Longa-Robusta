@@ -295,6 +295,18 @@ body.sheet-open{overflow:hidden}
 .sheet-error{padding:10px 12px;border-radius:12px;background:var(--alert-bg);color:var(--alert);font-size:15px;line-height:22px;font-weight:600}
 .sheet-cancel{height:48px;margin-top:-6px;font-size:17px}
 
+/* ---------- แถบปุ่มเดโม (?demo=1) ---------- */
+.demo-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:6;max-width:480px;margin:0 auto;
+  display:flex;align-items:center;gap:6px;padding:4px 10px calc(4px + var(--safe-b));
+  background:#2B2420;color:#fff;
+}
+.demo-tag{font-size:13px;font-weight:700;color:#F5C26B;padding-right:2px}
+.demo-bar button{flex:1;height:44px;border:1px solid #5A4E46;border-radius:10px;background:#3A312B;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.demo-bar button:disabled{opacity:.6}
+body.demo .footer{bottom:calc(52px + var(--safe-b));padding-bottom:12px}
+body.demo .toast{bottom:calc(150px + var(--safe-b))}
+
 /* ---------- toast ---------- */
 .toast{
   position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + var(--safe-b));z-index:30;

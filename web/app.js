@@ -8,7 +8,7 @@ const CFG = window.APP_CONFIG || {};
 const params = new URLSearchParams(location.search);
 let MOCK = /^[a-z0-9_-]+$/i.test(params.get("mock") || "") ? params.get("mock") : null;
 // โหมด mock: POST แล้วสลับไปใช้ไฟล์ mock ของสถานะถัดไป (จำลองสิ่งที่ backend ตอบ)
-const MOCK_AFTER_POST = [[/\/sell$/, "selling"], [/\/inspect/, "ready"], [/^\/lots$/, "drying"]];
+const MOCK_AFTER_POST = [[/\/sell$/, "selling"], [/\/inspect/, "ready"], [/^\/lots$/, "drying"], [/^\/demo\/reset$/, "drying"]];
 
 const STALE_MS = 30 * 60 * 1000;
 const POLL_MS = 10000, POLL_SELLING_MS = 5000;
@@ -230,7 +230,8 @@ function render() {
   footer.innerHTML = view.footer ? `<div class="footer">${view.footer}</div>` : "";
   screen.className = "screen";
   // เว้นที่ด้านล่างเท่าความสูงแถบปุ่มจริง (บางหน้ามี 2 ปุ่ม) เนื้อหาจะได้ไม่ถูกบัง
-  screen.style.paddingBottom = view.footer ? `${footer.firstElementChild.offsetHeight + 24}px` : "";
+  const demoH = document.querySelector(".demo-bar")?.offsetHeight || 0;
+  screen.style.paddingBottom = view.footer ? `${footer.firstElementChild.offsetHeight + demoH + 24}px` : demoH ? `${demoH + 24}px` : "";
   // ภาพโหลดไม่ขึ้น → ใช้ไอคอนเมล็ดแทน
   screen.querySelectorAll("img[data-fallback]").forEach((img) =>
     img.addEventListener("error", () => { img.parentElement.innerHTML = ICON.bean; }, { once: true }));
@@ -735,8 +736,76 @@ async function confirmSell(btn) {
   }
 }
 
+/* ================= ปุ่มเดโม (?demo=1) ================= */
+// X-Demo-Key เป็นความลับ ไม่ใส่ใน repo: ใส่ครั้งแรกตอนกดปุ่ม (หรือเปิดด้วย ?demokey=…) แล้วจำไว้ในเครื่องนี้
+const DEMO = params.get("demo") === "1";
+const DEMO_KEY_STORE = "tgr49-demo-key";
+function demoKey(ask) {
+  let key = params.get("demokey");
+  try {
+    if (key) localStorage.setItem(DEMO_KEY_STORE, key);
+    else key = localStorage.getItem(DEMO_KEY_STORE);
+  } catch { /* เบราว์เซอร์ไม่ให้ใช้ storage */ }
+  if (!key && ask && !MOCK) {
+    key = (prompt("ใส่ X-Demo-Key (ขอจากธร)") || "").trim();
+    try { if (key) localStorage.setItem(DEMO_KEY_STORE, key); } catch { /* ไม่เป็นไร */ }
+  }
+  return key || "";
+}
+const DEMO_SPEED = {
+  fast: { moisture_tick_seconds: 2, market_round_seconds: 2 },
+  normal: { moisture_tick_seconds: 30, market_round_seconds: 10 },
+};
+async function demoCall(btn, what) {
+  if (sending) return;
+  if (what === "reset" && !confirm("รีเซ็ตเดโม? ล็อตทั้งหมดของผู้ใช้นี้จะถูกลบ แล้วเริ่มล็อตใหม่")) return;
+  const key = demoKey(true);
+  if (!key && !MOCK) return toast("ยังไม่ได้ใส่ X-Demo-Key");
+  sending = true;
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "…";
+  try {
+    const headers = { "X-Demo-Key": key };
+    if (what === "reset") {
+      const lot = await api("/demo/reset", { method: "POST", headers });
+      closeSheet();
+      if (currentView() !== "main") history.replaceState(null, "", location.pathname + location.search);
+      state.lotId = lot.lot_id; // ล็อตเดิมถูกลบแล้ว ตามล็อตใหม่ไป
+      state.lastJson = "";
+      setLot(lot);
+      schedulePoll();
+      toast("รีเซ็ตแล้ว เริ่มล็อตใหม่");
+    } else {
+      const r = await api("/demo/speed", { method: "POST", headers, body: JSON.stringify(DEMO_SPEED[what]) });
+      const s = MOCK ? DEMO_SPEED[what] : r;
+      toast(`${what === "fast" ? "เร่งเวลาแล้ว" : "กลับเป็นปกติแล้ว"} · ความชื้นทุก ${s.moisture_tick_seconds} วิ · ตลาดทุก ${s.market_round_seconds} วิ`);
+    }
+  } catch (e) {
+    if (e.status === 403) { try { localStorage.removeItem(DEMO_KEY_STORE); } catch { /* ไม่เป็นไร */ } }
+    toast(e.message || "สั่งเดโมไม่สำเร็จ", 5000);
+  } finally {
+    sending = false;
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+function mountDemoBar() {
+  if (!DEMO) return;
+  document.body.classList.add("demo");
+  const bar = document.createElement("div");
+  bar.className = "demo-bar";
+  bar.setAttribute("aria-label", "ปุ่มเดโม");
+  bar.innerHTML = `<span class="demo-tag">เดโม</span>
+    <button data-action="demo" data-what="reset">รีเซ็ต</button>
+    <button data-action="demo" data-what="fast">เร่งเวลา</button>
+    <button data-action="demo" data-what="normal">ปกติ</button>`;
+  document.body.appendChild(bar);
+}
+
 /* ================= ปุ่มต่าง ๆ ================= */
 const ACTIONS = {
+  demo: (el) => demoCall(el, el.dataset.what),
   retry: (el) => {
     el.disabled = true;
     el.textContent = "กำลังโหลด…";
@@ -764,6 +833,7 @@ document.addEventListener("visibilitychange", () => {
 
 /* ================= เริ่ม ================= */
 async function boot() {
+  mountDemoBar();
   render(); // skeleton
   if (!MOCK) {
     try {
