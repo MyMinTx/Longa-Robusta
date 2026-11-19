@@ -1,0 +1,6 @@
+.env
+data/
+static/vis/*.jpg
+__pycache__/
+.pytest_cache/
+.venv/
