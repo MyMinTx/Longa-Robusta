@@ -22,7 +22,7 @@ URL tunnel ต้องเป็น **https** — หน้าเว็บอย
 
 | ค่า | ตั้งเป็น | ถ้าไม่ตั้ง จะเกิดอะไร |
 |---|---|---|
-| `CORS_ORIGINS` | `https://tgr49-liff.vercel.app,http://localhost:5173` | ค่าเริ่มต้น `*` ใช้ได้อยู่แล้ว · ถ้าจะจำกัดโดเมน ต้องมี 2 อันนี้ (อันหลังให้มิ้นทดสอบบนเครื่อง) · `allow_headers=["*"]` ในโค้ดรับ `Authorization` `X-Dev-User` `X-Demo-Key` ได้แล้ว |
+| `CORS_ORIGINS` | `https://longa-robusta.vercel.app,http://localhost:5173` | ค่าเริ่มต้น `*` ใช้ได้อยู่แล้ว · ถ้าจะจำกัดโดเมน ต้องมี 2 อันนี้ (อันหลังให้มิ้นทดสอบบนเครื่อง) · `allow_headers=["*"]` ในโค้ดรับ `Authorization` `X-Dev-User` `X-Demo-Key` ได้แล้ว |
 | `PUBLIC_BASE_URL` | URL tunnel **https** เดียวกับ `API_BASE` | `vis_url` จะเป็น `http://localhost:8000/static/vis/…` → มือถือโหลดภาพไม่ได้ (หน้าเว็บจะใช้ไอคอนแทน) และการ์ด Push ไม่มีภาพ (Flex รับเฉพาะ https) |
 | `LIFF_ID` | LIFF ID จากกาฟิว | ปุ่มใน Push จะลิงก์ไป `PUBLIC_BASE_URL/?lot=…` ซึ่งเป็น **backend ไม่ใช่หน้าเว็บ** (`push.py` ฟังก์ชัน `liff_url`) |
 | `LIFF_CHANNEL_ID` | Channel ID ของ channel ที่มี LIFF (LINE Login / MINI App) จากกาฟิว | โหมดพัฒนา: ทุกคนที่เปิดผ่าน LINE จะเป็นผู้ใช้เดียวกัน และไม่ได้ Push จริง (ข้อ 3) |
@@ -70,7 +70,7 @@ curl $API/lots/latest -H "$D"                      # Lot ของ dev-dev (ผ�
 
 # CORS preflight แบบที่เบราว์เซอร์ส่งจริง → ต้องได้ 200 และมี access-control-allow-origin
 curl -i -X OPTIONS $API/lots/latest \
-  -H "Origin: https://tgr49-liff.vercel.app" \
+  -H "Origin: https://longa-robusta.vercel.app" \
   -H "Access-Control-Request-Method: GET" \
   -H "Access-Control-Request-Headers: authorization,content-type,x-dev-user"
 
@@ -79,7 +79,7 @@ curl -X POST $API/demo/speed -H "$K" -H "$J" -d '{"moisture_tick_seconds":2,"mar
 curl $API/debug/pushes -H "$K"                     # Push ที่ส่ง/จำลอง + Flex JSON
 ```
 
-แล้วเปิด https://tgr49-liff.vercel.app (หลังมิ้นใส่ `API_BASE`) ต้องเห็นล็อตเดียวกับ `curl $API/lots/latest -H "X-Dev-User: dev"`
+แล้วเปิด https://longa-robusta.vercel.app (หลังมิ้นใส่ `API_BASE`) ต้องเห็นล็อตเดียวกับ `curl $API/lots/latest -H "X-Dev-User: dev"`
 
 ---
 
@@ -114,7 +114,7 @@ curl $API/debug/pushes -H "$K"                     # Push ที่ส่ง/จ
    def liff_url(lot_id):
        if settings.liff_id:
            return f"https://liff.line.me/{settings.liff_id}?lot={lot_id}"
-       return f"https://tgr49-liff.vercel.app/?lot={lot_id}"
+       return f"https://longa-robusta.vercel.app/?lot={lot_id}"
    ```
 3. หน้าที่ปุ่มในการ์ดพาไป (ตรวจตอนทดสอบรวม): พร้อมขาย → หน้า 03 · ต้องดูแล → หน้า 09 · ขายได้แล้ว → หน้า 08
 

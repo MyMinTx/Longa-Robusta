@@ -1,6 +1,6 @@
 # web — หน้าแอป LIFF "ตรวจล็อต · ขายแทน" (TGR-49)
 
-HTML/CSS/JS ล้วน ไม่มีขั้นตอน build · ออนไลน์ที่ https://tgr49-liff.vercel.app
+HTML/CSS/JS ล้วน ไม่มีขั้นตอน build · ออนไลน์ที่ https://longa-robusta.vercel.app
 
 ## รันบนเครื่อง
 ```
@@ -22,16 +22,17 @@ python -m http.server 5173
 - `LIFF_ID`: จากกาฟิว
 
 ยังไม่ใส่ `LIFF_ID` แอปจะส่ง `X-Dev-User: dev` แทน (ใช้ได้ตอน backend ยังไม่ตั้ง `LIFF_CHANNEL_ID`)
-backend ต้องอนุญาต CORS จาก `https://tgr49-liff.vercel.app` (ค่าเริ่มต้น `CORS_ORIGINS=*` ใช้ได้อยู่แล้ว)
+backend ต้องอนุญาต CORS จาก `https://longa-robusta.vercel.app` (ค่าเริ่มต้น `CORS_ORIGINS=*` ใช้ได้อยู่แล้ว)
 
-## Deploy (Vercel CLI)
-โปรเจกต์ `tgr49-liff` ลิงก์กับโฟลเดอร์นี้แล้ว (`.vercel/` ไม่ขึ้น git)
-```
-cd web
-npx vercel deploy --prod
-```
+## Deploy
+โปรเจกต์ Vercel `tgr49-liff` ต่อกับ GitHub แล้ว (Root Directory = `web`)
+- **push เข้า `main`** → deploy Production ที่ https://longa-robusta.vercel.app อัตโนมัติ
+- push branch อื่น → ได้ลิงก์ Preview (ต้องล็อกอิน Vercel ถึงเปิดได้)
+- ไม่ต้องใช้ `npx vercel deploy` (และอย่ารันในโฟลเดอร์นี้ CLI จะไปหา `web/web`)
+- พังหลัง deploy: Vercel → Deployments → รุ่นก่อนหน้า → Instant Rollback
+
 ไม่มี build: Vercel เสิร์ฟไฟล์ตามที่อยู่ในโฟลเดอร์ (`.vercelignore` กันไฟล์ `.env*` ไม่ให้ขึ้นเว็บ)
 
 ## ส่งต่อ
-- กาฟิว: ใส่ `https://tgr49-liff.vercel.app` เป็น Endpoint URL ของ LIFF (ขนาด Full)
+- กาฟิว: ใส่ `https://longa-robusta.vercel.app` เป็น Endpoint URL ของ LIFF (ขนาด Full)
 - ปุ่มใน Push เปิด `https://liff.line.me/<LIFF_ID>?lot=<lot_id>`

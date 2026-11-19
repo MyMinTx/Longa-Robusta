@@ -9,7 +9,7 @@
 
 | ช่อง | ใส่ | หมายเหตุ |
 |---|---|---|
-| Endpoint URL | `https://tgr49-liff.vercel.app` | ไม่ต้องมี path หรือ `?…` ต่อท้าย |
+| Endpoint URL | `https://longa-robusta.vercel.app` | ไม่ต้องมี path หรือ `?…` ต่อท้าย |
 | Size | **Full** | |
 | Scopes | `openid` **(ต้องมี)** · `profile` | ไม่มี `openid` → `liff.getIDToken()` ได้ null → backend ตอบ 401 ทุกครั้ง |
 | Add friend option (Bot link) | **On** (Normal หรือ Aggressive) ผูกกับ OA | Push ส่งถึงเฉพาะคนที่เป็นเพื่อน OA |
@@ -38,7 +38,7 @@ Roles → เพิ่ม มิ้น · ธร · กาฟิว · **มื�
 | `https://liff.line.me/<LIFF_ID>` | เปิดแอป (Rich menu / QR) |
 | `https://liff.line.me/<LIFF_ID>?lot=LOT-T49-1` | ปุ่มใน Push (backend สร้างให้เองเมื่อตั้ง `LIFF_ID`) |
 | `https://liff.line.me/<LIFF_ID>?demo=1` | มือถือเดโม: มีแถบปุ่ม รีเซ็ต / เร่งเวลา / ปกติ ล่างจอ |
-| `https://tgr49-liff.vercel.app/?mock=ready` | ดูหน้าจอโดยไม่ต้องมี backend (ทางสำรอง ดูข้อ 5) |
+| `https://longa-robusta.vercel.app/?mock=ready` | ดูหน้าจอโดยไม่ต้องมี backend (ทางสำรอง ดูข้อ 5) |
 
 ส่งลิงก์นี้ในแชต LINE แล้วกดจากในแชต จะเปิดในแอป LINE (ได้ตัวตนจาก LIFF) · เปิดจากเบราว์เซอร์อื่นจะพาไปล็อกอิน LINE ก่อน
 
@@ -90,7 +90,7 @@ Roles → เพิ่ม มิ้น · ธร · กาฟิว · **มื�
 ถ้าอยากโชว์หน้า "ต้องดูแล": ในตัวจำลอง ผลตรวจสุ่มเกรด (20% เป็น poor → เสีย > 7%) จึงอาจเจอเองระหว่างเดโม — ให้ใช้เป็นจุดเล่า: กด "ขอตรวจใหม่" (ในโหมดเดโมจะจำลองว่าคัดเมล็ดแล้ว ผลจะดีขึ้น) → กลับเป็นพร้อมขาย
 
 ### คำถามกรรมการเพิ่มเติม (นอกจาก C3 เดิม)
-- **"ถ้าข้อมูลค้าง/เน็ตหลุดจะเกิดอะไร"** → เปิด `https://tgr49-liff.vercel.app/?mock=stale` ให้ดู: แถบแดง "ข้อมูลไม่อัปเดตมา 2 ชั่วโมง" และปุ่มขายกดไม่ได้
+- **"ถ้าข้อมูลค้าง/เน็ตหลุดจะเกิดอะไร"** → เปิด `https://longa-robusta.vercel.app/?mock=stale` ให้ดู: แถบแดง "ข้อมูลไม่อัปเดตมา 2 ชั่วโมง" และปุ่มขายกดไม่ได้
 - **"กดขายซ้ำจะขายซ้ำไหม"** → ปุ่มส่งได้ทีละครั้ง และ backend รับกดซ้ำได้ผลเดิม
 - **"ราคาต่ำสุดมาจากไหน"** → sheet 04 กล่องเขียว 80%
 
@@ -101,7 +101,7 @@ Roles → เพิ่ม มิ้น · ธร · กาฟิว · **มื�
 | ปัญหา | ทางสำรอง |
 |---|---|
 | Push ไม่เด้ง | เปิดแอปจาก Rich menu / ลิงก์ในแชตเอง แอปดึงข้อมูลใหม่ทุก 10 วิอยู่แล้ว |
-| Pi ดับ / tunnel หลุด | เปิดในเบราว์เซอร์มือถือ: `https://tgr49-liff.vercel.app/?mock=drying` → `?mock=ready` → กดยืนยันขาย (สลับเป็นหน้ากำลังขายเอง) → `?mock=sold` · ไม่ต้องมี backend แต่ต้องมีเน็ต |
+| Pi ดับ / tunnel หลุด | เปิดในเบราว์เซอร์มือถือ: `https://longa-robusta.vercel.app/?mock=drying` → `?mock=ready` → กดยืนยันขาย (สลับเป็นหน้ากำลังขายเอง) → `?mock=sold` · ไม่ต้องมี backend แต่ต้องมีเน็ต |
 | ไม่มีเน็ตเลย | วิดีโอสำรอง (C4 เดิม) |
 
 ลิงก์ mock ทั้งหมด: `drying` `drying-priced` `ready` `ready-counts` `selling` `selling-offers` `sold` `alert` `alert-moisture` `stale`
