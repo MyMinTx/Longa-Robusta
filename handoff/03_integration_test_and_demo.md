@@ -12,7 +12,7 @@
 | 1 | backend บน Pi + Funnel https · `PUBLIC_BASE_URL` = URL นั้น | ธร | `curl $API/health` จากเน็ตมือถือได้ `{"ok":true}` |
 | 2 | `DEMO_KEY` / `INGEST_KEY` ตั้งใหม่แล้ว | ธร | `curl -X POST $API/demo/speed -H "X-Demo-Key: tgr49-demo"` ต้องได้ **403** |
 | 3 | CORS ผ่าน | ธร | คำสั่ง preflight ใน `01_for_backend.md` ข้อ 4 |
-| 4 | หน้าเว็บมี `API_BASE` แล้ว deploy | มิ้น | https://tgr49-liff.vercel.app ไม่ขึ้น "ยังไม่ได้ตั้งค่าที่อยู่ระบบ" |
+| 4 | หน้าเว็บมี `API_BASE` แล้ว deploy | มิ้น | https://longa-robusta.vercel.app ไม่ขึ้น "ยังไม่ได้ตั้งค่าที่อยู่ระบบ" |
 | 5 | LIFF app ตั้งค่าตาม `02_for_line.md` ข้อ 1 · Testers ครบ | กาฟิว | เปิด `https://liff.line.me/<LIFF_ID>` จากแชตได้ |
 | 6 | token, `LIFF_ID`, `LIFF_CHANNEL_ID` ใน backend · `LIFF_ID` ในหน้าเว็บ (**พร้อมกัน**) | ธร + มิ้น | ข้อ 3 รอบ B |
 | 7 | มือถือทุกเครื่องแอดเพื่อน OA แล้ว | ทุกคน | |
@@ -26,7 +26,7 @@ backend ยังไม่ตั้ง `LIFF_CHANNEL_ID` · หน้าเว�
 
 | ขั้น | ทำ | ต้องเห็น |
 |---|---|---|
-| A1 | เปิด `https://tgr49-liff.vercel.app/?demo=1` ในเบราว์เซอร์ | หน้า 02 หรือหน้าตามสถานะล็อตล่าสุด · ป้าย "ข้อมูลจำลอง" |
+| A1 | เปิด `https://longa-robusta.vercel.app/?demo=1` ในเบราว์เซอร์ | หน้า 02 หรือหน้าตามสถานะล็อตล่าสุด · ป้าย "ข้อมูลจำลอง" |
 | A2 | แถบเดโม → รีเซ็ต (ใส่ DEMO_KEY) | "รีเซ็ตแล้ว เริ่มล็อตใหม่" · หน้า 02 ความชื้น ~18% |
 | A3 | เร่งเวลา | ความชื้นลดทุก ~10 วิ (แอปดึงทุก 10 วิ) · กราฟยาวขึ้น |
 | A4 | รอ | กลายเป็นหน้า 03 พร้อมขาย (หรือ 09 ถ้าสุ่มได้เมล็ดเสีย > 7%) · ภาพเมล็ดขึ้นในการ์ดผลตรวจ (ถ้า `PUBLIC_BASE_URL` ถูก) |
@@ -103,7 +103,7 @@ backend ยังไม่ตั้ง `LIFF_CHANNEL_ID` · หน้าเว�
 
 ## 6. Freeze ก่อนนำเสนอ
 1. ทดสอบรอบ B ผ่าน 3 รอบติด (อย่างน้อย 1 รอบบน Android และ 1 รอบบน iPhone)
-2. มิ้น: merge `web-liff` → `main` · `git tag v1.0` · deploy ครั้งสุดท้าย
+2. มิ้น: push `main` รุ่นสุดท้าย (Vercel deploy เอง) · `git tag v1.0` · `git push origin v1.0`
 3. ธร: tag backend v1.0 · ไม่แก้ `.env` อีก
 4. กาฟิว: channel → Published · QR · Rich menu · อัดวิดีโอสำรอง
-5. เช้าวันนำเสนอ: C5 ใน `03_กาฟิว_LINE_และเดโม.md` + เปิด https://tgr49-liff.vercel.app/?mock=ready ในมือถือสำรองไว้หนึ่งแท็บ
+5. เช้าวันนำเสนอ: C5 ใน `03_กาฟิว_LINE_และเดโม.md` + เปิด https://longa-robusta.vercel.app/?mock=ready ในมือถือสำรองไว้หนึ่งแท็บ

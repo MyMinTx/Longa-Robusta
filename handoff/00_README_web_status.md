@@ -18,13 +18,16 @@
 
 | อะไร | ที่อยู่ | หมายเหตุ |
 |---|---|---|
-| หน้าเว็บ (Production) | https://tgr49-liff.vercel.app | **ใส่เป็น Endpoint URL ของ LIFF** |
-| ดูหน้าจอด้วยข้อมูลตัวอย่าง | https://tgr49-liff.vercel.app/?mock=ready | ไม่ต้องมี backend / LINE |
-| โค้ด | GitHub `MyMinTx/Longa-Robusta` · branch `web-liff` · โฟลเดอร์ `web/` | `main` ยังเป็น Initial commit |
-| โปรเจกต์ Vercel | `tgr49-liff` ในบัญชี Vercel ของมิ้น | deploy ได้เฉพาะมิ้น (ดูข้อ 8) |
+| หน้าเว็บ (Production) | https://longa-robusta.vercel.app | **ใส่เป็น Endpoint URL ของ LIFF** |
+| ดูหน้าจอด้วยข้อมูลตัวอย่าง | https://longa-robusta.vercel.app/?mock=ready | ไม่ต้องมี backend / LINE |
+| โค้ด | GitHub `MyMinTx/Longa-Robusta` · branch `main` · โฟลเดอร์ `web/` | |
+| โปรเจกต์ Vercel | `tgr49-liff` ในบัญชี Vercel ของมิ้น · ต่อกับ GitHub · Root Directory = `web` | **push เข้า `main` = deploy Production อัตโนมัติ** (ดูข้อ 8) |
 | เปิดแอปผ่าน LINE | `https://liff.line.me/<LIFF_ID>` | รอ LIFF ID จากกาฟิว |
 
-ถ้าเปิด https://tgr49-liff.vercel.app เฉย ๆ ตอนนี้ จะขึ้น **"เชื่อมต่อระบบไม่ได้ · ยังไม่ได้ตั้งค่าที่อยู่ระบบ (API_BASE)"** — ถูกต้องแล้ว เพราะยังไม่ได้ URL API จากธร
+> ลิงก์เก่า `tgr49-liff.vercel.app` (ในเอกสารชุดแรก) **เลิกใช้แล้ว เปิดไม่ได้** — ใช้ `https://longa-robusta.vercel.app` เท่านั้น
+> ลิงก์ยาวแบบ `tgr49-liff-xxxxx-mymintxs-projects.vercel.app` จะพาไปหน้าล็อกอิน Vercel (ป้องกันไว้) อย่าใช้
+
+ถ้าเปิด https://longa-robusta.vercel.app เฉย ๆ ตอนนี้ จะขึ้น **"เชื่อมต่อระบบไม่ได้ · ยังไม่ได้ตั้งค่าที่อยู่ระบบ (API_BASE)"** — ถูกต้องแล้ว เพราะยังไม่ได้ URL API จากธร
 
 ---
 
@@ -56,7 +59,7 @@
 | ใส่ `LIFF_ID` แล้ว deploy ใหม่ | LIFF ID | กาฟิว → มิ้น (และธรต้องใส่ `LIFF_CHANNEL_ID` พร้อมกัน ดู `01` ข้อ 3) |
 | ทดสอบใน LINE จริง · ปุ่มใน Push (`?lot=`) · Push จริง | 2 ข้อบน + token ใน backend | ทุกคน (`03`) |
 | ทดสอบบน iPhone และ Android จริง | มือถือ | ทุกคน |
-| Merge `web-liff` เข้า `main` / tag v1.0 | ทดสอบรวมผ่าน | มิ้น |
+| tag v1.0 (freeze) | ทดสอบรวมผ่าน | มิ้น |
 
 ---
 
@@ -202,15 +205,18 @@ python -m http.server 5173
      LIFF_ID: "2000000000-AbCdEfGh",
    };
    ```
-2. deploy (เครื่องมิ้นที่ล็อกอิน Vercel แล้ว)
+2. commit แล้ว **push เข้า `main`** → Vercel deploy Production ให้เองภายใน ~10 วินาที
    ```powershell
-   cd <repo>\web
-   npx vercel deploy --prod
+   git add web/config.js
+   git commit -m "Set API_BASE and LIFF_ID"
+   git push origin main
    ```
-3. เปิดเช็ก https://tgr49-liff.vercel.app (Vercel ตั้งให้เบราว์เซอร์ไม่จำไฟล์เก่า เห็นของใหม่ทันที)
+3. เช็กที่ Vercel → tgr49-liff → Deployments (ต้องขึ้น Ready) แล้วเปิด https://longa-robusta.vercel.app (Vercel ตั้งให้เบราว์เซอร์ไม่จำไฟล์เก่า เห็นของใหม่ทันที)
 
-ถ้าธรหรือกาฟิวต้องแก้หน้าเว็บเอง: แก้ใน branch `web-liff` แล้ว push → บอกมิ้นให้ deploy
-(หรือมิ้นเชื่อมโปรเจกต์ Vercel กับ GitHub: Vercel → tgr49-liff → Settings → Git → เลือก repo · Root Directory = `web` · จากนั้น push เข้า production branch แล้ว deploy เอง)
+- push branch อื่น (ไม่ใช่ `main`) = ได้ลิงก์ Preview แยก ไม่กระทบเว็บจริง (ลิงก์ Preview ต้องล็อกอิน Vercel ถึงจะเปิดได้)
+- **ไม่ต้อง**ใช้ `npx vercel deploy` แล้ว และ**อย่า**รันในโฟลเดอร์ `web/` (โปรเจกต์ตั้ง Root Directory = `web` ไว้ CLI จะไปหา `web/web` แล้ว error)
+- เว็บพังหลัง deploy: Vercel → Deployments → เลือกรุ่นก่อนหน้าที่ใช้ได้ → **Instant Rollback**
+- ธรหรือกาฟิวแก้หน้าเว็บเองได้ถ้ามีสิทธิ์เขียน repo — แต่ Vercel บัญชีฟรี (Hobby) อาจไม่ deploy commit ของคนอื่นใน repo private ถ้า push แล้ว Deployments ไม่ขึ้นรุ่นใหม่ ให้มิ้นกด Redeploy หรือส่งโค้ดให้มิ้น push แทน
 
 ---
 
